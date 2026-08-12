@@ -12,7 +12,7 @@ module.exports = [
     }
   },
   {
-    files: ["script.js"],
+    files: ["docs/script.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "script",
@@ -25,7 +25,7 @@ module.exports = [
     }
   },
   {
-    files: ["batch.js"],
+    files: ["docs/batch.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "script",
