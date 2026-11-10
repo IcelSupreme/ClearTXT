@@ -37,9 +37,40 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # The environment checks the run's own ref, not the ref checked out
+      # below, so the requested ref is checked here: only main, or an
+      # existing v* release tag whose commit is on main, can ship.
+      - name: Check the ref to ship
+        id: ref
+        env:
+          REF: ${{ inputs.ref || github.ref }}
+        run: |
+          case "$REF" in
+            main | refs/heads/main) ref=refs/heads/main ;;
+            refs/tags/v*) ref=$REF ;;
+            v*) ref=refs/tags/$REF ;;
+            *)
+              echo "::error::Deploy ships main or a v* release tag, not '$REF'."
+              exit 1
+              ;;
+          esac
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ steps.ref.outputs.ref }}
+          fetch-depth: 0
+      - name: Check the commit is on main
+        env:
+          REF: ${{ steps.ref.outputs.ref }}
+        run: |
+          git rev-parse --verify --quiet "$REF^{commit}" > /dev/null || {
+            echo "::error::'$REF' doesn't exist."
+            exit 1
+          }
+          git merge-base --is-ancestor HEAD origin/main || {
+            echo "::error::'$REF' isn't on main."
+            exit 1
+          }
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

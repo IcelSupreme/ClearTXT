@@ -12,6 +12,8 @@ A merge to `main` doesn't ship. A deploy happens only when the Deploy workflow r
 - **The release workflow calls it.** The release workflow is planned in #45. A release created inside a workflow can't trigger another workflow's release event, so the release workflow calls Deploy directly.
 - **An explicit ship run.** Run Deploy by hand from the Actions tab, or with `gh workflow run deploy.yml --ref main`. Leave **ref** empty to ship `main`, or give a release tag, such as `v1.15.0`, to ship that version.
 
+Whichever way it starts, Deploy ships only `main` or an existing `v*` release tag whose commit is on `main`. It checks the requested ref before checking it out and stops with an error for anything else, such as another branch, a missing tag, or a tag on a commit outside `main`. The `github-pages` environment checks only the run's own ref, not the ref it checks out, so this check is what keeps an unapproved ref off the live site.
+
 Only one deploy runs at a time. A second one waits for the first to finish.
 
 ## Release a version
