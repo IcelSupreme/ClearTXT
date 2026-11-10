@@ -135,7 +135,7 @@ A story or bug is done when all of these hold. The pull request template's "Read
 - The work is on its own branch, in a pull request that closes the issue.
 - Biome (`npm run lint`) passes on every changed file. Once the type check exists (#47), it shows no errors.
 - The tests that the work touches pass (`npm test`). Work that changes what users do was driven end to end through the real UI or API, not only checked in screenshots.
-- Every adjustable value lives in configuration, with its description, and is listed in [`product-settings.md`](../guides/product-settings.md).
+- Every adjustable value lives in configuration, with its description.
 - All new or changed user-visible text was written by the product manager.
 - Every screen and action the work touches works on every platform, browser, and device the product supports, and with every input method it supports.
 - The docs and `CHANGELOG.md` say what changed.
@@ -235,7 +235,7 @@ From time to time, compare the closed issues that a pull request finished with t
 
 - Count the lines changed in code and in documents (`.md` files). Leave out generated files, such as lock files, snapshots, and build output: a regenerated file can add tens of thousands of lines whatever the task's size. When one pull request finished several issues, split its size between them.
 - Lines aren't effort. Every story carries fixed work that lines don't show, such as its pull request, its changelog lines, and the product manager's check. A bug's points pay for finding the cause, which doesn't show in the fix's size, and visual work spends its effort on screenshots and checks.
-- Time can only be compared when commits follow [`working-practices.md`](working-practices.md), "Commit at each working step": with one commit made when the work is done, or a first commit made as the pull request opens, the building before it doesn't show.
+- Time can only be compared when a commit is made at each working step: with one commit made when the work is done, or a first commit made as the pull request opens, the building before it doesn't show.
 - Leave out issues closed as not planned, closed without a pull request, trackers, and epics.
 
 ## Why no Project board
