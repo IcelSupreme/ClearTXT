@@ -8,7 +8,7 @@ Planning happens at several levels, each inside the one above it. Each level sha
 
 | Level | What it answers | Where it lives |
 | --- | --- | --- |
-| Vision | What product this is, and why | Not written yet: the product manager chose to skip it for now (2026-11-10) |
+| Vision | What product this is, and why | [`vision.md`](../product/vision.md) |
 | Roadmap | Which phases the project moves through, in what order | [`roadmap.md`](roadmap.md) |
 | Milestone | What a stage of the current phase delivers, and how to tell it's done | A GitHub milestone, and its section in [`roadmap.md`](roadmap.md) |
 | Epic | Which topic of work a story belongs to | An epic issue, and its file in [`product/epics/`](../product/epics/) |

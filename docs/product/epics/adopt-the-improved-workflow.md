@@ -18,7 +18,7 @@ Brings ClearTXT onto the improved workflow: no local-only setup or forbidden wor
 ## Planning
 
 - **The current phase is "Post launch improvement"** (product manager, 2026-11-10). See [`roadmap.md`](../../project/roadmap.md).
-- **No vision document for now** (product manager, 2026-11-10).
+- **The vision is adapted from the README** (product manager, 2026-11-10). See [`vision.md`](../vision.md). Open: the users, the voice, and the points it marks as open.
 - **Area labels:** `frontend`, `ux`, `infra`, `project`, and `docs` (product manager, 2026-11-10). Planned in #43.
 - **Open:** the milestones of "Post launch improvement", their dates, and their criteria.
 - **Open:** whether GitHub's unused default labels are deleted (#43).
