@@ -32,9 +32,9 @@ The icons and the logo are drawn as inline `<svg>` markup inside each page's HTM
 
 | Pack | Version | Folder | License | Credit |
 |---|---|---|---|---|
-| [Phosphor](https://phosphoricons.com), Regular weight | `@phosphor-icons/core` 2.1.1 | Inline in `site/**/*.html`, `site/batch.js`, `site/favicon.svg`, and `scripts/social-card/card.html` | MIT, copyright 2023 Phosphor Icons | Open: whether the site shows a credit |
+| [Phosphor](https://phosphoricons.com), Bold weight | `@phosphor-icons/core` 2.1.1 | Inline in `site/**/*.html`, `site/batch.js`, `site/favicon.svg`, and `scripts/social-card/card.html` | MIT, copyright 2023 Phosphor Icons | License notice on the Documentation page (product manager, 2026-11-10) |
 
-Phosphor replaced Lucide (ISC) on 2026-11-10, by the product manager's decision, for its MIT license. The icons are copied unchanged from the package's `assets/regular/` folder; only the `<svg>` wrapper is the site's own.
+Phosphor replaced Lucide (ISC) on 2026-11-10, by the product manager's decision, for its MIT license. The icons are copied unchanged from the package's `assets/bold/` folder; only the `<svg>` wrapper is the site's own.
 
 ## Fonts
 
