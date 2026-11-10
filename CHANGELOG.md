@@ -3,6 +3,8 @@
 All notable changes to ClearTXT, versioned per [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`, tracked in `package.json`). A MAJOR bump means existing input can now produce different output, or a documented toggle/behavior was removed or renamed; MINOR adds functionality without changing what already worked; PATCH is a fix or docs change with no behavior change. Releases before 1.0.0 were pre-1.0 (`0.y.z`), and per semver's own rule for that phase, a MINOR release there could still include a behavior change - those are called out explicitly below.
 
 ### Unreleased
+
+### 1.14.1
 - **Tooling (no runtime change):** added a tracked `.githooks/pre-push` hook that refuses a force push or delete of `main`, then runs the machine's own push checks when it has them. Enable it once per clone with `git config core.hooksPath .githooks`. `.gitattributes` keeps `.githooks/` files at LF line endings so the hook runs on Windows checkouts too.
 - **Fix (no runtime change):** `npm run lint` failed on Windows checkouts because files checked out with CRLF line endings, which Biome's formatting check rejects. `.gitattributes` now checks every text file out with LF ([#50](https://github.com/icelsupreme/ClearTXT/issues/50)).
 - **Tooling (no runtime change):** Biome now skips every file Git ignores, through `.gitignore` or the local `.git/info/exclude`, instead of listing local-only folders in `biome.jsonc`. Local-only files are no longer listed in the tracked `.gitignore`. An old changelog entry was reworded to match ([#38](https://github.com/icelsupreme/ClearTXT/issues/38)).
