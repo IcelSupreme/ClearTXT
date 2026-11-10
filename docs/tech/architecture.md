@@ -19,6 +19,8 @@ site/                   The site, exactly as it ships. See README.md, "Project s
     changelog/,
     documentation/
 test/                   Unit tests for the text-processing logic in site/script.js
+scripts/                Scripts for the team. Not part of the site.
+    social-card/        card.html, the source of site/social-card.png, and build.sh, which renders it
 docs/                   Documents for the team. Never published.
     project/            How the work is planned and done: the roadmap, the issue workflow, and the third-party list
     product/            What the product is, from the product manager's direction: one file per epic in epics/

@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  // Icons: Phosphor Icons (https://phosphoricons.com), MIT License,
+  // Copyright (c) 2023 Phosphor Icons. Full license: licenses/phosphor.txt.
+
   // Minimal ZIP writer (no compression - the "stored" method) so "Download
   // all" can trigger a single Save dialog instead of one per file. Kept
   // hand-written rather than pulling in a library, matching the rest of
@@ -372,10 +375,10 @@
       '<div class="batchRowActions">' +
       '<button class="downloadOneBtn" ' +
       (entry.result ? "" : "disabled") +
-      '><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg><span class="btnLabel">Download</span></button>' +
+      '><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M228,144v64a12,12,0,0,1-12,12H40a12,12,0,0,1-12-12V144a12,12,0,0,1,24,0v52H204V144a12,12,0,0,1,24,0Zm-108.49,8.49a12,12,0,0,0,17,0l40-40a12,12,0,0,0-17-17L140,115V32a12,12,0,0,0-24,0v83L96.49,95.51a12,12,0,0,0-17,17Z"/></svg><span class="btnLabel">Download</span></button>' +
       '<button class="removeOneBtn iconOnly" aria-label="Remove ' +
       escapeHtml(displayName) +
-      '" title="Remove"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>' +
+      '" title="Remove"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></svg></button>' +
       "</div>" +
       "</div>"
     );
