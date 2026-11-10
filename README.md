@@ -26,7 +26,7 @@ For a copy that makes zero external requests: download the four families' `.woff
 
 ## Icons
 
-The icons and the logo are [Phosphor](https://phosphoricons.com) (MIT License), Regular weight, embedded directly as inline `<svg>` markup in each page's own HTML - no icon font, no JS runtime, no extra network request. `fill="currentColor"` is what lets them pick up each button's own text color automatically, including on hover.
+The icons and the logo are [Phosphor](https://phosphoricons.com) (MIT License), Bold weight, embedded directly as inline `<svg>` markup in each page's own HTML - no icon font, no JS runtime, no extra network request. `fill="currentColor"` is what lets them pick up each button's own text color automatically, including on hover.
 
 ## Usage
 
