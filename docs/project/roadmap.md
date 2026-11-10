@@ -14,20 +14,24 @@ On GitHub, each milestone of this phase is named `Post launch improvement: <mile
 
 ### Milestone: Workflow adoption (current)
 
-- **Target date:** open. The GitHub milestone has no due date yet.
+- **Target date:** none. ClearTXT is a low-effort project, worked on when the product manager has time (product manager, 2026-11-10).
 - **Covers:** adopting the improved workflow, as planned in the epic [#48](https://github.com/icelsupreme/ClearTXT/issues/48) and its file, [`adopt-the-improved-workflow.md`](../product/epics/adopt-the-improved-workflow.md).
-- **Completion criteria:** open.
-- **Go criteria:** open.
+- **Completion criteria** (product manager, 2026-11-10):
+  - Every story on the milestone is closed.
+- **Go criteria** (product manager, 2026-11-10):
+  - CI and Deploy run green on `main`.
 - **Review:** not yet held.
 
 ### Milestone: Site enhancements
 
 Added by the product manager on 2026-11-10.
 
-- **Target date:** open. The GitHub milestone has no due date yet.
+- **Target date:** none. ClearTXT is a low-effort project, worked on when the product manager has time (product manager, 2026-11-10).
 - **Covers:** improvements to the live site, starting with replacing the Lucide icons with Phosphor ([#55](https://github.com/icelsupreme/ClearTXT/issues/55)).
-- **Completion criteria:** open.
-- **Go criteria:** open.
+- **Completion criteria** (product manager, 2026-11-10):
+  - Every story on the milestone is closed.
+- **Go criteria** (product manager, 2026-11-10):
+  - CI and Deploy run green on `main`.
 - **Review:** not yet held.
 
 ### Later milestones

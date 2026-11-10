@@ -8,6 +8,7 @@ Brings ClearTXT onto the improved workflow: no local-only setup or forbidden wor
 - **Local-only files are listed in `.git/info/exclude`, not in tracked files** (product manager, 2026-11-10). Built in #38.
 - **The history was rewritten, and the commits split by role** (product manager, 2026-11-10): the product manager's commits and merges as the product manager, all other work as the developer account. Built in #40.
 - **Old pull request descriptions are edited; old pull request refs aren't purged** (product manager, 2026-11-10). Done in #40.
+- **Approved pull requests are merged with GitHub's merge,** and GitHub as committer of those merge commits is accepted (product manager, 2026-11-10).
 - **`site/robots.txt` keeps its crawler block list,** and the push guard skips its word check for that file only (product manager, 2026-11-10).
 
 ## Releases and deploys
@@ -19,9 +20,9 @@ Brings ClearTXT onto the improved workflow: no local-only setup or forbidden wor
 
 - **The current phase is "Post launch improvement"** (product manager, 2026-11-10). See [`roadmap.md`](../../project/roadmap.md).
 - **The vision is adapted from the README** (product manager, 2026-11-10). See [`vision.md`](../vision.md). Open: the users, the voice, and the points it marks as open.
-- **Area labels:** `frontend`, `ux`, `infra`, `project`, and `docs` (product manager, 2026-11-10). Planned in #43.
-- **Open:** the milestones of "Post launch improvement", their dates, and their criteria.
-- **Open:** whether GitHub's unused default labels are deleted (#43).
+- **Area labels:** `frontend`, `ux`, `infra`, `project`, and `docs` (product manager, 2026-11-10). Set up in #43.
+- **Milestones:** "Workflow adoption" and "Site enhancements", each done when every story on it is closed, and a go when CI and Deploy run green on `main` (product manager, 2026-11-10). No target dates: ClearTXT is a low-effort project, worked on when the product manager has time.
+- **GitHub's default labels that the workflow doesn't use are deleted** (product manager, 2026-11-10). Done in #43.
 
 ## Checks
 
