@@ -90,7 +90,7 @@ Linting and formatting are both handled by [Biome](https://biomejs.dev) (configu
 
 `site/script.js` runs as a plain browser script, but its pure text-processing functions (`processText`, `applyWhitespaceCleanup`, `inputHighlightHtml`, etc.) are also exposed via `module.exports` when loaded under Node, which is what `test/processText.test.js` exercises directly - no DOM or browser needed to run the test suite.
 
-CI runs lint and tests on every push to `main` and on every pull request (see `.github/workflows/ci.yml`), plus a non-blocking `npm audit` check.
+CI runs lint and tests on every pull request that changes more than docs, and by hand for a release commit (see `.github/workflows/ci.yml`), plus a non-blocking `npm audit` check. Releases and deploys are described in [docs/tech/deploy.md](docs/tech/deploy.md).
 
 ### Versioning and cache-busting
 

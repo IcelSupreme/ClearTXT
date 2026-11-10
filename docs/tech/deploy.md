@@ -9,7 +9,7 @@ The Deploy workflow (`.github/workflows/deploy.yml`) checks out one commit, pack
 A merge to `main` doesn't ship. A deploy happens only when the Deploy workflow runs, in one of these ways:
 
 - **A release is published.** The workflow ships the release's tag.
-- **The release workflow calls it.** The release workflow is planned in #45. A release created inside a workflow can't trigger another workflow's release event, so the release workflow calls Deploy directly.
+- **The Release workflow calls it.** A release created inside a workflow can't trigger another workflow's release event, so Release calls Deploy directly.
 - **An explicit ship run.** Run Deploy by hand from the Actions tab, or with `gh workflow run deploy.yml --ref main`. Leave **ref** empty to ship `main`, or give a release tag, such as `v1.15.0`, to ship that version.
 
 Whichever way it starts, Deploy ships only `main` or an existing `v*` release tag whose commit is on `main`. It checks the requested ref before checking it out and stops with an error for anything else, such as another branch, a missing tag, or a tag on a commit outside `main`. The `github-pages` environment checks only the run's own ref, not the ref it checks out, so this check is what keeps an unapproved ref off the live site.
@@ -18,10 +18,15 @@ Only one deploy runs at a time. A second one waits for the first to finish.
 
 ## Release a version
 
-The release workflow and its steps are planned in #45. Until then:
+1. Land the work on `main` through pull requests with green CI.
+1. Make the release commit straight to `main`, as the developer account:
+   - Move the lines under **Unreleased** in `CHANGELOG.md` to a new `## [<version>] - <date>` section, leave an empty **Unreleased** above it, and add the version's link at the end of the file.
+   - Set the version in `package.json` and `package-lock.json` (`npm version <version> --no-git-tag-version`), in every `?v=` string, and in each page's header badge.
+   - Add the release's entry to the public Changelog page, `site/changelog/index.html`, with text the product manager approved.
+1. Run CI by hand on `main` (`gh workflow run ci.yml --ref main`), and wait for it to pass.
+1. Run Release by hand on `main` (`gh workflow run release.yml --ref main`).
 
-1. Land the work on `main` through a pull request with green CI, with the version bump and the changelog entry.
-1. Run Deploy by hand on `main`.
+Release refuses to run when the run isn't on `main`, when the version's tag already exists, when the version isn't the same in all its places, when the Changelog page or `CHANGELOG.md` has no entry for it, or when the commit has no green CI run. Otherwise it creates the `v<version>` tag and the GitHub Release, with the version's `CHANGELOG.md` lines as notes, and then calls Deploy with the tag. Don't push a release tag yourself.
 
 ## What is in the artifact
 
