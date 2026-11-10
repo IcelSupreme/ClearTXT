@@ -1,5 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect text files, normalize them to LF, and check them out as LF so
+# Biome's LF formatting check passes on Windows too
+* text=auto eol=lf
 
 # Git hooks run under sh, which needs LF line endings
 .githooks/* text eol=lf
