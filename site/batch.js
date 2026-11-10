@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  // Icons: Phosphor Icons (https://phosphoricons.com), MIT License,
+  // Copyright (c) 2023 Phosphor Icons. Full license: licenses/phosphor.txt.
+
   // Minimal ZIP writer (no compression - the "stored" method) so "Download
   // all" can trigger a single Save dialog instead of one per file. Kept
   // hand-written rather than pulling in a library, matching the rest of

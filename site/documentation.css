@@ -57,17 +57,3 @@
 .docSection a {
   color: var(--accent);
 }
-/* Third-party license text, shown verbatim; wraps on narrow screens. */
-.licenseText {
-  margin: 0;
-  padding: 12px 14px;
-  color: var(--muted);
-  background: #0d1017;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
