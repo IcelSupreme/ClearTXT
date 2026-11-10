@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const ClearTXT = require("../docs/script.js");
+const ClearTXT = require("../site/script.js");
 
 // The same shipped-default opts object script.js's own Fixes panel derives
 // its checkboxes from (see FIX_TOGGLE_DEFS/defaultOpts there) - reading it

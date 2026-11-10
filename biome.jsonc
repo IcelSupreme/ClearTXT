@@ -27,7 +27,7 @@
         // filter/strip regexes deliberately contain them (the old ESLint setup
         // suppressed the equivalent no-control-regex per-line).
         "noControlCharactersInRegex": "off",
-        // docs/*.js are plain browser <script>s (IIFE, sourceType "script"),
+        // site/*.js are plain browser <script>s (IIFE, sourceType "script"),
         // not ES modules, so their top-level "use strict" is meaningful, not
         // redundant.
         "noRedundantUseStrict": "off",

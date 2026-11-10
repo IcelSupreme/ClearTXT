@@ -1,0 +1,48 @@
+name: Deploy
+
+# Publishes site/ to GitHub Pages. A merge to main doesn't ship: this runs only
+# for a published release, an explicit ship run, or a call from another
+# workflow (the release workflow calls it, because a release it creates can't
+# trigger this workflow's release event).
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Release tag to ship, such as v1.15.0 (empty ships main)
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      ref:
+        description: Release tag to ship
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a queued deploy waits instead of cancelling a live one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
