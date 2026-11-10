@@ -25,7 +25,7 @@
 </head>
 <body>
   <header>
-    <h1><svg class="logoIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2v2"/><path d="M12 3h-2"/><path d="M13.5 10.5 22 2"/><path d="M14.734 13.841a2 2 0 00-.314-2.42L12.58 9.58a2 2 0 00-2.421-.314l-7.657 4.461A1 1 0 002.3 15.3l6.403 6.403a1 1 0 001.571-.204z"/><path d="M20 15v4"/><path d="M22 17h-4"/><path d="M4 4v4"/><path d="m5 18 2-2"/><path d="M6 6H2"/><path d="m7.699 10.7 5.602 5.601"/></svg>ClearTXT <span class="version" title="Version, matches package.json">v1.14.0</span></h1>
+    <h1><svg class="logoIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/></svg>ClearTXT <span class="version" title="Version, matches package.json">v1.14.0</span></h1>
     <p>Batch mode - clean multiple files at once, using the same fixes below.</p>
     <nav class="toolsNav" aria-label="Tools">
       <a href="../" class="toolsNavLink">Single-file</a>
@@ -36,7 +36,7 @@
 
   <div class="wrap">
     <div id="dropzone" class="dropzone">
-      <svg class="dropzoneIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"/><path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"/></svg>
+      <svg class="dropzoneIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66,66.34l-40-40A8,8,0,0,0,168,24H88A16,16,0,0,0,72,40V56H56A16,16,0,0,0,40,72V216a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V200h16a16,16,0,0,0,16-16V72A8,8,0,0,0,213.66,66.34ZM168,216H56V72h76.69L168,107.31v84.53c0,.06,0,.11,0,.16s0,.1,0,.16V216Zm32-32H184V104a8,8,0,0,0-2.34-5.66l-40-40A8,8,0,0,0,136,56H88V40h76.69L200,75.31Zm-56-32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,152Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,184Z"/></svg>
       <p>Drag files here, or</p>
       <button id="chooseFilesBtn"><span class="btnLabel">Choose files&hellip;</span></button>
       <input type="file" id="filesInput" accept="text/*,.md,.mdx,.json,.yaml,.yml,.csv,.log,.env,.ini,.toml,.conf,.js,.jsx,.ts,.tsx,.mjs,.cjs,.py,.java,.c,.h,.cpp,.hpp,.cs,.go,.rs,.rb,.php,.swift,.kt,.kts,.html,.htm,.css,.scss,.less,.xml,.sh,.bash,.zsh,.sql,.gitignore" multiple hidden>
@@ -46,9 +46,9 @@
     <div id="batchPanel" class="batchPanel" style="display:none;">
       <div class="batchToolbar">
         <span id="batchSummary" class="batchSummary" aria-live="polite"></span>
-        <button id="downloadAllBtn" title="Downloads a single .zip of every file the current fixes actually changed, each under its original name - files that were already clean are skipped"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg><span class="btnLabel">Download changed (.zip)</span></button>
-        <button id="removeUnchangedBtn" title="Removes files from this list that the current fixes didn't change - they're already clean"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="m19 10-4 4"/><path d="m15 10 4 4"/></svg><span class="btnLabel">Remove unchanged</span></button>
-        <button id="clearAllBtn"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="btnLabel">Clear all</span></button>
+        <button id="downloadAllBtn" title="Downloads a single .zip of every file the current fixes actually changed, each under its original name - files that were already clean are skipped"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></svg><span class="btnLabel">Download changed (.zip)</span></button>
+        <button id="removeUnchangedBtn" title="Removes files from this list that the current fixes didn't change - they're already clean"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M192,144H64a8,8,0,0,1,0-16H192a8,8,0,0,1,0,16Zm40-64H24a8,8,0,0,0,0,16H232a8,8,0,0,0,0-16ZM128,176H104a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm93.66-5.66a8,8,0,0,0-11.32,0L192,188.69l-18.34-18.35a8,8,0,0,0-11.32,11.32L180.69,200l-18.35,18.34a8,8,0,0,0,11.32,11.32L192,211.31l18.34,18.35a8,8,0,0,0,11.32-11.32L203.31,200l18.35-18.34A8,8,0,0,0,221.66,170.34Z"/></svg><span class="btnLabel">Remove unchanged</span></button>
+        <button id="clearAllBtn"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/></svg><span class="btnLabel">Clear all</span></button>
       </div>
       <div id="batchList" class="batchList"></div>
     </div>
@@ -57,7 +57,7 @@
       <summary>Fixes &amp; explanation</summary>
       <p style="color:var(--muted);font-size:.9rem;">Choose which fixes to apply, grouped below - each group's checkbox toggles every fix in it at once. A fix that's off leaves its characters untouched; anything none of them can convert is removed. Changing a fix re-cleans every file already added, and preferences are shared with the single-file page.</p>
       <div class="fixActions">
-        <button id="restoreDefaultsBtn" title="Reset every fix (and the em dash target) back to its default"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="btnLabel">Restore defaults</span></button>
+        <button id="restoreDefaultsBtn" title="Reset every fix (and the em dash target) back to its default"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11-11.63A80,80,0,1,0,71.43,71.39a3.07,3.07,0,0,1-.26.25L44.59,96H72a8,8,0,0,1,0,16H24a8,8,0,0,1-8-8V56a8,8,0,0,1,16,0V85.8L60.25,60A96,96,0,0,1,224,128Z"/></svg><span class="btnLabel">Restore defaults</span></button>
       </div>
 
       <div class="fixList">
@@ -211,7 +211,7 @@
     </details>
 
     <p class="pageCredit">Made by <a href="https://github.com/icelsupreme" target="_blank" rel="noopener noreferrer">Aviv M. Icel</a> &middot; <a href="https://bsky.app/profile/icel.me" target="_blank" rel="noopener noreferrer">Bluesky</a> &middot; <a href="../changelog/">Changelog</a> &middot; <a href="../documentation/">Documentation</a></p>
-    <div class="shareRow"><button id="shareBtn" title="Copy this page's link to your clipboard"><svg class="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg><span class="btnLabel">Share</span></button></div>
+    <div class="shareRow"><button id="shareBtn" title="Copy this page's link to your clipboard"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></svg><span class="btnLabel">Share</span></button></div>
   </div>
 
 <script src="../script.js?v=1.14.0"></script>
