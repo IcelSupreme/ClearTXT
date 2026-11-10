@@ -21,7 +21,7 @@ Brings ClearTXT onto the improved workflow: no local-only setup or forbidden wor
 - **The current phase is "Post launch improvement"** (product manager, 2026-11-10). See [`roadmap.md`](../../project/roadmap.md).
 - **The vision is adapted from the README** (product manager, 2026-11-10). See [`vision.md`](../vision.md). Open: the users, the voice, and the points it marks as open.
 - **Area labels:** `frontend`, `ux`, `infra`, `project`, and `docs` (product manager, 2026-11-10). Set up in #43.
-- **Milestones:** "Workflow adoption" and "Site enhancements", each done when every story on it is closed, and a go when CI and Deploy run green on `main` (product manager, 2026-11-10). Open: their target dates.
+- **Milestones:** "Workflow adoption" and "Site enhancements", each done when every story on it is closed, and a go when CI and Deploy run green on `main` (product manager, 2026-11-10). No target dates: ClearTXT is a low-effort project, worked on when the product manager has time.
 - **GitHub's default labels that the workflow doesn't use are deleted** (product manager, 2026-11-10). Done in #43.
 
 ## Checks
