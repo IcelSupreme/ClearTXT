@@ -1,10 +1,11 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
-  "files": {
-    // Claude Code skill assets, not part of this project's own source - the
-    // same directory the old eslint.config.js ignored. Kept as a defensive
-    // ignore even though the directory isn't checked in.
-    "includes": ["**", "!.claude"]
+  // Skip every file Git ignores, through .gitignore or the local
+  // .git/info/exclude, so local-only files are never checked.
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
   },
   "formatter": {
     "enabled": true,

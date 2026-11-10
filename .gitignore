@@ -1,4 +1,1 @@
 node_modules/
-# Claude Code's own skill assets (e.g. .claude/skills/), not part of this
-# project's source - see biome.jsonc's files.includes for the same reasoning.
-.claude/

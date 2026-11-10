@@ -5,6 +5,7 @@ All notable changes to ClearTXT, versioned per [Semantic Versioning](https://sem
 ### Unreleased
 - **Tooling (no runtime change):** added a tracked `.githooks/pre-push` hook that refuses a force push or delete of `main`, then runs the machine's own push checks when it has them. Enable it once per clone with `git config core.hooksPath .githooks`. `.gitattributes` keeps `.githooks/` files at LF line endings so the hook runs on Windows checkouts too.
 - **Fix (no runtime change):** `npm run lint` failed on Windows checkouts because files checked out with CRLF line endings, which Biome's formatting check rejects. `.gitattributes` now checks every text file out with LF ([#50](https://github.com/icelsupreme/ClearTXT/issues/50)).
+- **Tooling (no runtime change):** Biome now skips every file Git ignores, through `.gitignore` or the local `.git/info/exclude`, instead of listing local-only folders in `biome.jsonc`. Local-only files are no longer listed in the tracked `.gitignore`. An old changelog entry was reworded to match ([#38](https://github.com/icelsupreme/ClearTXT/issues/38)).
 
 ### 1.14.0
 - **Feature:** the single-file **Import from file** picker, the **Batch** page's file picker, and both of the **Compare** page's file pickers now list `.mdx` in their `accept` filters, alongside the `.md` that was already there. MDX is Markdown with embedded JSX (`.mdx`), and ClearTXT's cleaning is content-based, not extension-based - the pipeline already leaves Markdown syntax untouched and treats everything else as ordinary text - so an `.mdx` file was always processed correctly once loaded; the only gap was that OS file pickers would grey it out (or force switching to "All files") because the extension wasn't in the `accept` list. This is purely an `accept`-attribute addition: no JavaScript reads or validates the extension (imported files are read as text regardless, and drag-and-drop into Batch never filtered by extension at all), so there is no behavior change for any file that could already be loaded.
@@ -105,7 +106,7 @@ All notable changes to ClearTXT, versioned per [Semantic Versioning](https://sem
 ### 1.3.0
 - **Feature:** a new [changelog.html](docs/changelog.html) page - a condensed, user-facing "what's new," grouped by release, distinct from this file's full technical detail (which it links out to). Linked from every page's footer.
 - **Feature:** a "Share" button in every page's footer that copies the current page's URL to the clipboard, next to the existing "Made by ..." credit line.
-- **Cleanup:** removed `.claude/skills/ui-ux-pro-max/` (a Claude Code skill's own data files - CSVs, Python scripts, reference docs) from version control - it was never part of this project's own source, just accidentally committed alongside it. Added `.claude/` to `.gitignore` to keep it from happening again.
+- **Cleanup:** removed a local tool's data files (CSVs, Python scripts, reference docs) from version control - they were never part of this project's own source, just accidentally committed alongside it, and are now ignored to keep it from happening again.
 - **Docs:** fixed a stray raw `<code>` HTML tag and an unintended italic in the 1.2.1 entry below, which should have used this file's usual backtick/plain-text style throughout.
 
 ### 1.2.1
