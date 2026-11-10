@@ -20,6 +20,16 @@ On GitHub, each milestone of this phase is named `Post launch improvement: <mile
 - **Go criteria:** open.
 - **Review:** not yet held.
 
+### Milestone: Site enhancements
+
+Added by the product manager on 2026-11-10.
+
+- **Target date:** open. The GitHub milestone has no due date yet.
+- **Covers:** improvements to the live site, starting with replacing the Lucide icons with Phosphor ([#55](https://github.com/icelsupreme/ClearTXT/issues/55)).
+- **Completion criteria:** open.
+- **Go criteria:** open.
+- **Review:** not yet held.
+
 ### Later milestones
 
 Open: the product manager hasn't set them yet.
