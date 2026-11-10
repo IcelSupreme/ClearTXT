@@ -30,9 +30,11 @@ The site ships no dependencies. These are used for development only.
 
 The icons are drawn as inline `<svg>` markup inside each page's HTML, so there's no icon folder or license file beside them.
 
+- **Lucide will be replaced by [Phosphor](https://phosphoricons.com)** (product manager, 2026-11-10), for its MIT license. Phosphor's `@phosphor-icons/core` package is MIT (version 2.1.1 on npm, 2026-11-10). Its entry is added when the icons are replaced.
+
 | Pack | Version | Folder | License | Credit |
 |---|---|---|---|---|
-| [Lucide](https://lucide.dev) | Open: not recorded | Inline in `site/**/*.html` | ISC | Open: whether the site shows a credit |
+| [Lucide](https://lucide.dev) | Not recorded | Inline in `site/**/*.html` | ISC | To be replaced by Phosphor (product manager, 2026-11-10) |
 
 ## Fonts
 
