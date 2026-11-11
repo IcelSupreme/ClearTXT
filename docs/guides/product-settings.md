@@ -29,3 +29,16 @@ The HTML elements that are dropped with everything inside them, so their text ne
 - **Default:** `head`, `title`, `script`, `style`, `noscript`, and `template`.
 - **Adding a name,** such as `"iframe"`, `"button"`, or `"form"`, drops that element's text too.
 - **Removing a name** lets that element's text into the Markdown. For example, without `"script"` and `"style"`, pasted code and styles show up as plain text.
+
+## Tools nav drawer
+
+### Collapse width
+
+The widest screen on which the tools nav collapses into the "Tools" drawer.
+
+- **Where:** `site/styles.css`, the `@media (max-width: 480px)` rule after `.toolsNavToggle`.
+- **Unit:** CSS pixels.
+- **Default:** `480px`. With four tools, the nav wraps onto two rows below about 400 px; the extra room covers wider fonts.
+- **Sensible range:** 400 to 760 px.
+- **Up:** wider phones and narrow windows get the drawer too.
+- **Down:** more screens show the full nav row. Below about 400 px, the row wraps onto two lines.

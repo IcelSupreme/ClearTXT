@@ -1897,6 +1897,44 @@
     });
   }
 
+  // The tools nav's drawer on narrow screens (styles.css shows the
+  // "Tools" button only there). Every page has it, so it's wired here,
+  // unconditional like shareBtn above. Escape, a click outside, or
+  // choosing a link closes it.
+  var navToggle = document.querySelector(".toolsNavToggle");
+  if (navToggle) {
+    var toolsNav = document.getElementById(
+      navToggle.getAttribute("aria-controls"),
+    );
+    var setNavOpen = function (open) {
+      toolsNav.classList.toggle("is-open", open);
+      navToggle.setAttribute("aria-expanded", String(open));
+    };
+    var navIsOpen = function () {
+      return toolsNav.classList.contains("is-open");
+    };
+    navToggle.addEventListener("click", function () {
+      setNavOpen(!navIsOpen());
+    });
+    toolsNav.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setNavOpen(false);
+    });
+    document.addEventListener("click", function (e) {
+      if (
+        navIsOpen() &&
+        !toolsNav.contains(e.target) &&
+        !navToggle.contains(e.target)
+      )
+        setNavOpen(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && navIsOpen()) {
+        setNavOpen(false);
+        navToggle.focus();
+      }
+    });
+  }
+
   var input = document.getElementById("input");
   // Not the main single-editor page (e.g. batch.html, which loads this
   // file only for the pure ClearTXT functions and drives its own copy of
