@@ -749,12 +749,16 @@
   // a YAML front matter block opening the text (see LEADING_FRONT_MATTER),
   // whose lines are its structure, so the line and paragraph break fixes
   // would otherwise flatten it into one line that's no longer front matter.
+  // Its last character is the closing "---" line's own line break, which
+  // stays a line break; blank lines after it are cleaned like any others.
   function applyWhitespaceCleanup(changes, opts, protectedLength) {
     var n = changes.length;
 
     // A run of one "\n" is a line break within a paragraph; a run of two or
     // more is a blank-line paragraph break. Each is governed independently.
-    var i = protectedLength || 0;
+    // The scan starts on the front matter's last character, so its closing
+    // line break and the blank lines after it are seen as one run.
+    var i = protectedLength ? protectedLength - 1 : 0;
     while (i < n) {
       var seg = changes[i];
       if (seg.type !== "removed" && seg.replacement === "\n") {
@@ -766,16 +770,19 @@
           changes[j].replacement === "\n"
         )
           j++;
+        var keepFirst = start < protectedLength;
         if (j - start === 1) {
-          if (opts.removeLineBreaks) {
+          if (opts.removeLineBreaks && !keepFirst) {
             changes[start].type = "converted";
             changes[start].category = "linebreak";
             changes[start].replacement = " ";
           }
         } else if (opts.removeParagraphBreaks) {
-          changes[start].type = "converted";
-          changes[start].category = "paragraph";
-          changes[start].replacement = " ";
+          if (!keepFirst) {
+            changes[start].type = "converted";
+            changes[start].category = "paragraph";
+            changes[start].replacement = " ";
+          }
           for (var k = start + 1; k < j; k++) {
             changes[k].type = "removed";
             changes[k].category = "paragraph";
@@ -1068,8 +1075,8 @@
   var EXPORT_SLUG_MAX = 50;
 
   // A YAML front matter block opening the text: a "---" line, any lines,
-  // then a closing "---" line, with the line breaks that follow it.
-  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n+|$)/;
+  // then a closing "---" line with its own line break.
+  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n|$)/;
 
   // Builds a YAML front matter block from `fields`, a list of [name, value]
   // pairs, for the Convert page. A field whose value is empty is left out,
