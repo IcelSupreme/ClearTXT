@@ -1163,3 +1163,19 @@ test("slugForFilename skips front matter with CRLF line breaks too", () => {
     "First-body-line",
   );
 });
+
+test("front matter stays valid after the default fixes change a value's characters", () => {
+  const block = ClearTXT.frontMatter([
+    ["title", "News:א update"],
+    ["author", "Zoë Ruiz"],
+    ["site", "Plain ASCII site"],
+  ]);
+  assert.equal(
+    block,
+    "---\ntitle: |-\n News:א update\nauthor: |-\n Zoë Ruiz\nsite: Plain ASCII site\n---\n",
+  );
+  assert.equal(
+    ClearTXT.processText(block, opts()).output,
+    "---\ntitle: |-\n News: update\nauthor: |-\n Zoe Ruiz\nsite: Plain ASCII site\n---\n",
+  );
+});
