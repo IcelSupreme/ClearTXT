@@ -18,6 +18,7 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ### Changed
 
+- On screens 480 px wide or narrower, the tools nav collapses into a drawer, opened by a "Tools" button with Phosphor's List icon. Escape, a click outside, or choosing a link closes it. The 404 page now loads `script.js` for it ([#69](https://github.com/icelsupreme/ClearTXT/issues/69)).
 - Downloads from the single-file and Convert pages are named after the text's first Markdown heading, falling back to its first line, instead of always the first line. On Convert, an imported file's name comes first, then the HTML's `<title>`, cleaned with the same fixes. Markdown markers (`#`, `*`, `_`, `>`, `` ` ``, `~`) never reach a file name, and runs of hyphens become one ([#68](https://github.com/icelsupreme/ClearTXT/issues/68)).
 - `exportFilename` takes an optional file extension, `.txt` by default; the Convert page exports `.md` ([#62](https://github.com/icelsupreme/ClearTXT/issues/62)).
 - `CHANGELOG.md` follows Keep a Changelog from here on, and its intro defines the public surface. CI now runs on pull requests only, in one job, skipping drafts and docs-only changes ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
