@@ -24,6 +24,5 @@ Approved with their order by the product manager on 2026-11-11.
 1. #63: As a user, I can have the Markdown cleaned with the same fixes and options as the other tools, so that the result is safe to paste anywhere.
 1. #64: As a user, I can import an `.html` file, so that I don't have to copy its source.
 
-## Open
-
-- The page's user-visible text other than its name, including its section on the Documentation page.
+- **The page's address is `/convert/`,** matching `/batch/` and `/compare/` (product manager, 2026-11-11).
+- **The page's text was drafted in the style of the current site and approved** (product manager, 2026-11-11). It's listed in #62, "Text needed". New text uses sentence case and follows the Google developer style; the tab title keeps the other pages' " - " separator.
