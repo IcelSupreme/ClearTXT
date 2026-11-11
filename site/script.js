@@ -1075,8 +1075,10 @@
   var EXPORT_SLUG_MAX = 50;
 
   // A YAML front matter block opening the text: a "---" line, any lines,
-  // then a closing "---" line with its own line break.
-  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n|$)/;
+  // then a closing "---" line with its own line break. Line breaks may be
+  // "\r\n" too: text in a page's text box never has them, but text passed
+  // to these functions directly can.
+  var LEADING_FRONT_MATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/;
 
   // Builds a YAML front matter block from `fields`, a list of [name, value]
   // pairs, for the Convert page. A field whose value is empty is left out,
@@ -1142,9 +1144,9 @@
     // are skipped too, so the first-line fallback is the body's first line.
     var frontMatter = LEADING_FRONT_MATTER.exec(text);
     var body = frontMatter
-      ? text.slice(frontMatter[0].length).replace(/^\n+/, "")
+      ? text.slice(frontMatter[0].length).replace(/^(?:\r?\n)+/, "")
       : text;
-    var lines = body.split("\n");
+    var lines = body.split(/\r?\n/);
     var fence = "";
     for (var i = 0; i < lines.length; i++) {
       var fenceMatch = CODE_FENCE.exec(lines[i]);

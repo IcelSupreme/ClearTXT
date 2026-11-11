@@ -1150,3 +1150,16 @@ test("slugForFilename looks for the title after any front matter", () => {
     "First-body-line",
   );
 });
+
+test("slugForFilename skips front matter with CRLF line breaks too", () => {
+  assert.equal(
+    ClearTXT.slugForFilename(
+      "---\r\ntitle: x\r\n---\r\n\r\nintro\r\n# Body heading\r\nmore",
+    ),
+    "Body-heading",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("---\r\ntitle: x\r\n---\r\nFirst body line"),
+    "First-body-line",
+  );
+});
