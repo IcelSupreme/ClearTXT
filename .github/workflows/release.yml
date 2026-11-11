@@ -1,0 +1,100 @@
+name: Release
+
+# Cuts the version in package.json: checks it's ready, creates the v<version>
+# tag and the GitHub Release with notes from CHANGELOG.md, then ships it
+# through the Deploy workflow. Run it by hand on main, after CI has passed
+# for the release commit.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Refuse anything but main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run Release on main, not $GITHUB_REF."
+          exit 1
+      - uses: actions/checkout@v5
+      - name: Read the version
+        id: version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+      - name: Check the tag is new
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            echo "::error::$TAG already exists. Bump the version first."
+            exit 1
+          fi
+      - name: Check the version is in step everywhere
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          fail=0
+          lock=$(node -p "require('./package-lock.json').version")
+          [ "$lock" = "$VERSION" ] || { echo "::error::package-lock.json has $lock."; fail=1; }
+          # Every ?v= in the HTML outside comments, quoted or not, whatever it holds, so a malformed or empty one is caught too.
+          vs=$(find site -name '*.html' -exec perl -0777 -pe 's/<!--.*?-->//gs' {} + | grep -oE "\?v=[^\"'[:space:]<>&]*" || true)
+          if [ -z "$vs" ]; then
+            echo "::error::No ?v= cache-busting strings found in site/."; fail=1
+          else
+            stale=$(printf '%s\n' "$vs" | sort -u | grep -vxF "?v=$VERSION" || true)
+            [ -z "$stale" ] || { echo "::error::Cache-busting strings not at $VERSION: $stale"; fail=1; }
+          fi
+          for f in $(grep -rlF 'class="version"' site --include='*.html'); do
+            grep -qF ">v$VERSION<" "$f" || { echo "::error::$f's header badge isn't v$VERSION."; fail=1; }
+          done
+          grep -qF "<span class=\"changelogVer\">$VERSION</span>" site/changelog/index.html \
+            || { echo "::error::The Changelog page has no $VERSION entry."; fail=1; }
+          exit $fail
+      - name: Read the release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          awk -v v="$VERSION" '
+            index($0, "## [" v "] - ") == 1 { on = 1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error::CHANGELOG.md has no '## [$VERSION] - <date>' section with lines."
+            exit 1
+          fi
+      - name: Check CI passed for this commit
+        run: |
+          ok=$(gh run list --workflow ci.yml --commit "$GITHUB_SHA" --status success --json databaseId --jq length)
+          if [ "$ok" = 0 ]; then
+            echo "::error::No green CI run for $GITHUB_SHA. Run CI by hand on main first."
+            exit 1
+          fi
+      - name: Create the tag and the GitHub Release
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release create "$TAG" --target "$GITHUB_SHA" --title "ClearTXT ${TAG#v}" --notes-file notes.md
+
+  deploy:
+    needs: release
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ needs.release.outputs.tag }}

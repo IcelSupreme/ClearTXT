@@ -1,12 +1,27 @@
 name: CI
 
+# Runs on pull requests only, not again on the merge to main: it's the same
+# code. Run it by hand (workflow_dispatch) for a commit pushed straight to
+# main, such as a release commit, before running the Release workflow.
 on:
-  push:
-    branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".github/**/*.md"
+      - ".githooks/**"
+  workflow_dispatch:
+
+# A new push to the same branch cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
+  checks:
+    # Drafts run nothing until they're marked ready for review.
+    if: github.event.pull_request.draft != true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -16,26 +31,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
       - run: npm test
-
-  audit:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm audit --audit-level=high
+      - name: npm audit (doesn't block)
+        run: npm audit --audit-level=high
+        continue-on-error: true
