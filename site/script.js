@@ -1816,16 +1816,50 @@
     "template",
   ];
 
+  // A GitHub table needs a header row, and the GFM add-on keeps any table
+  // without one as raw HTML. So a table whose first row isn't a header
+  // gets that row promoted: its cells become header cells. A table with no
+  // rows holds nothing and is dropped, since the add-on fails on it.
+  function promoteFirstRowsToHeaders(doc) {
+    var tables = doc.querySelectorAll("table");
+    for (var t = 0; t < tables.length; t++) {
+      var row = tables[t].rows[0];
+      if (!row) {
+        tables[t].remove();
+        continue;
+      }
+      // The add-on also misses the first row after a <caption>, so the
+      // caption moves out into a paragraph just before the table.
+      var caption = tables[t].caption;
+      if (caption) {
+        var p = doc.createElement("p");
+        while (caption.firstChild) p.appendChild(caption.firstChild);
+        tables[t].before(p);
+        caption.remove();
+      }
+      if (row.parentNode.nodeName === "THEAD") continue;
+      var cells = Array.prototype.slice.call(row.cells);
+      for (var c = 0; c < cells.length; c++) {
+        if (cells[c].nodeName === "TH") continue;
+        var th = doc.createElement("th");
+        while (cells[c].firstChild) th.appendChild(cells[c].firstChild);
+        cells[c].replaceWith(th);
+      }
+    }
+  }
+
   var turndownService = null;
-  // Turndown reads the HTML with the browser's DOMParser, which builds an
-  // inert document: no script in it runs, and nothing it links to loads.
+  // DOMParser builds an inert document: no script in it runs, and nothing
+  // it links to loads. Turndown then works on that document's body.
   function htmlToMarkdown(html) {
     if (!turndownService) {
       turndownService = new root.TurndownService(TURNDOWN_OPTIONS);
       turndownService.use(root.turndownPluginGfm.gfm);
       turndownService.remove(TURNDOWN_REMOVE);
     }
-    return turndownService.turndown(html);
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    promoteFirstRowsToHeaders(doc);
+    return turndownService.turndown(doc.body);
   }
 
   var output = document.getElementById("output");
