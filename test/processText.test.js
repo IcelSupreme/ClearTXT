@@ -1048,3 +1048,26 @@ test("frontMatter collapses a value onto one line", () => {
     "---\ntitle: Two lines and tabs\n---\n",
   );
 });
+
+test("slugForFilename takes the first Markdown heading, falling back to the first line", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("Intro line\n\n## The **real** title\n# Later"),
+    "The-real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("Plain first line\nmore"),
+    "Plain-first-line",
+  );
+});
+
+test("slugForFilename leaves Markdown markers out of file names", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("# A [link](https://x.com) and `code`"),
+    "A-link-and-code",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("> quoted_snake_case *star"),
+    "quotedsnakecase-star",
+  );
+  assert.equal(ClearTXT.slugForFilename("---\ntitle: x\n---\n"), "");
+});

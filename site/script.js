@@ -1086,11 +1086,14 @@
     return lines.length ? "---\n" + lines.join("\n") + "\n---\n" : "";
   }
 
-  // Turns the first line of `text` into a short, filesystem-safe slug for
-  // use in the exported filename: strips characters that are illegal (or
-  // just awkward) in a filename on common OSes, collapses whitespace to
-  // hyphens, and truncates. Returns "" if there's nothing usable (empty
-  // text, or a first line that's entirely unsafe/whitespace characters).
+  // Turns the title of `text` into a short, filesystem-safe slug for use
+  // in the exported filename. The title is the first Markdown heading,
+  // falling back to the first line, with its Markdown syntax stripped and
+  // any marker left over (# * _ > ` ~) removed. Then strips characters
+  // that are illegal (or just awkward) in a filename on common OSes,
+  // collapses whitespace to hyphens, and truncates. Returns "" if there's
+  // nothing usable (empty text, or a title that's entirely
+  // unsafe/whitespace characters).
   //
   // Also strips Unicode Format-category/bidi-control characters and the
   // hidden-payload ranges (the same ones isFormatChar/isHiddenPayloadRange
@@ -1104,10 +1107,23 @@
   // an .exe as a .txt" trick documented as a real-world malware delivery
   // technique - which this app of all things shouldn't hand back to you
   // in a file it just generated.
+  var MARKDOWN_HEADING_LINE = /^ {0,3}#{1,6}\s+\S/;
   function slugForFilename(text) {
-    var firstLine = text.split("\n")[0] || "";
+    var lines = text.split("\n");
+    var titleLine =
+      lines.find(function (line) {
+        return MARKDOWN_HEADING_LINE.test(line);
+      }) ||
+      lines[0] ||
+      "";
+    // "|" goes first: it's unsafe in a filename, and stripMarkdown would
+    // turn it into a space.
+    var title = stripMarkdown(titleLine.replace(/\|/g, "")).replace(
+      /[#*_>`~]/g,
+      "",
+    );
     return (
-      Array.from(firstLine)
+      Array.from(title)
         .filter(function (ch) {
           return (
             !isFormatChar(ch.codePointAt(0)) &&
@@ -1120,6 +1136,7 @@
         .replace(/[\\/:*?"<>|\x00-\x1F]/g, "")
         .trim()
         .replace(/\s+/g, "-")
+        .replace(/-{2,}/g, "-")
         .slice(0, EXPORT_SLUG_MAX)
         .replace(/-+$/, "")
     );
@@ -1923,6 +1940,9 @@
   }
 
   var turndownService = null;
+  // The title of the HTML last converted, which names the Markdown
+  // download (unless an imported file's name does).
+  var htmlTitle = "";
   // DOMParser builds an inert document: no script in it runs, and nothing
   // it links to loads. Turndown then works on that document's body.
   function htmlToMarkdown(html) {
@@ -1933,7 +1953,9 @@
     }
     var doc = new DOMParser().parseFromString(html, "text/html");
     promoteFirstRowsToHeaders(doc);
-    var meta = frontMatter(htmlMetadata(doc));
+    var metadata = htmlMetadata(doc);
+    htmlTitle = metadata[0][1] || "";
+    var meta = frontMatter(metadata);
     var body = turndownService.turndown(doc.body);
     return meta && body ? meta + "\n" + body : meta + body;
   }
@@ -2637,10 +2659,21 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
+    // Convert names the download after an imported file, else the HTML's
+    // title, cleaned with the same fixes as the text; every page otherwise
+    // names it after the text's own title.
     var importedSlug = slugForFilename(importedName);
+    var cleanTitle =
+      htmlInput && htmlTitle
+        ? processText(htmlTitle, fixOptions.readOpts()).output
+        : "";
     a.download = importedSlug
       ? importedSlug + ".md"
-      : exportFilename(output.value, undefined, htmlInput ? ".md" : ".txt");
+      : exportFilename(
+          cleanTitle || output.value,
+          undefined,
+          htmlInput ? ".md" : ".txt",
+        );
     document.body.appendChild(a);
     a.click();
     a.remove();
