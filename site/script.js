@@ -2375,7 +2375,13 @@
     update();
   }
 
+  // On the Convert page, the name of the last imported file, without its
+  // extension: the Markdown download is named after it. Forgotten when the
+  // input is cleared or emptied.
+  var importedName = "";
+
   function update() {
+    if (!input.value) importedName = "";
     var opts = fixOptions.readOpts();
     fixOptions.saveOpts(opts);
 
@@ -2527,6 +2533,7 @@
       .text()
       .then(function (text) {
         input.value = text;
+        importedName = htmlInput ? file.name.replace(/\.html?$/i, "") : "";
         update();
         input.focus();
       })
@@ -2554,11 +2561,10 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = exportFilename(
-      output.value,
-      undefined,
-      htmlInput ? ".md" : ".txt",
-    );
+    var importedSlug = slugForFilename(importedName);
+    a.download = importedSlug
+      ? importedSlug + ".md"
+      : exportFilename(output.value, undefined, htmlInput ? ".md" : ".txt");
     document.body.appendChild(a);
     a.click();
     a.remove();
