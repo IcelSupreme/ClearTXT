@@ -1088,7 +1088,12 @@
   // later do to its characters, such as turning a smart quote into '"'.
   // The block is indented one space, so "Remove extra spaces" has nothing
   // in it to collapse.
-  var YAML_PLAIN_SAFE = /^[\p{L}\p{N}][\p{L}\p{N} .,/()+@%=_?&~:#-]*$/u;
+  //
+  // A plain value is ASCII only: the fixes change or remove non-ASCII
+  // characters, and removing one could leave a plain value invalid, as
+  // "News:א update" becomes "News: update" once the Hebrew letter goes.
+  // The fixes leave these ASCII characters as they are.
+  var YAML_PLAIN_SAFE = /^[A-Za-z0-9][A-Za-z0-9 .,/()+@%=_?&~:#-]*$/;
   // ": ", " #", and a closing ":" would end or comment out a plain value.
   var YAML_PLAIN_BREAK = /: | #|:$/;
   var YAML_PLAIN_SPECIAL = /^(true|false|null|yes|no|on|off|~)$/i;
@@ -1997,14 +2002,19 @@
   }
 
   // The page's metadata, kept as front matter (see frontMatter). Each field
-  // takes the first of its sources that has a value, in this order.
+  // takes the first of its sources that has a value, in this order. Every
+  // source is trimmed first, so one holding only spaces counts as empty
+  // and the next source is used, as frontMatter would drop it anyway.
   function metaContent(doc, selector) {
     var el = doc.querySelector(selector);
-    return el ? el.getAttribute("content") || "" : "";
+    return el ? (el.getAttribute("content") || "").trim() : "";
   }
   function htmlMetadata(doc) {
     var titleEl = doc.querySelector("title");
     var canonical = doc.querySelector('link[rel~="canonical" i]');
+    var canonicalHref = canonical
+      ? (canonical.getAttribute("href") || "").trim()
+      : "";
     return [
       [
         "title",
@@ -2018,8 +2028,7 @@
       ],
       [
         "source",
-        (canonical && canonical.getAttribute("href")) ||
-          metaContent(doc, 'meta[property="og:url" i]'),
+        canonicalHref || metaContent(doc, 'meta[property="og:url" i]'),
       ],
       [
         "author",
