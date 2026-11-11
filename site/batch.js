@@ -259,7 +259,7 @@
   //
   // Also strips Unicode Format-category/bidi-control characters and the
   // hidden-payload ranges (ClearTXT.isFormatChar / isHiddenPayloadRange -
-  // the same ones "Strip invisible & control characters" catches in
+  // the same ones "Strip invisible and control characters" catches in
   // pasted text) unconditionally: a dropped-in File's name never goes
   // through that toggle-governed pipeline at all, so without this, a name
   // containing e.g. a right-to-left override (U+202E) could visually
@@ -312,10 +312,10 @@
     a.remove();
     URL.revokeObjectURL(url);
     // Same transient-label pattern as script.js's Copy/Export buttons
-    // ("Copied!"/"Exported!") - without this, clicking Download gave no
+    // ("Copied"/"Exported") - without this, clicking Download gave no
     // acknowledgement at all that anything happened. Shared implementation
     // so a fix to the pattern only has to happen in one place.
-    ClearTXT.flashButtonLabel(btn, "Downloaded!");
+    ClearTXT.flashButtonLabel(btn, "Downloaded");
   }
 
   function escapeHtml(s) {
@@ -334,7 +334,9 @@
       if (c.type === "removed") removed++;
       else if (c.type === "converted") converted++;
     });
-    var bits = [inLen + " → " + outLen + " chars"];
+    var bits = [
+      inLen + " → " + outLen + (outLen === 1 ? " character" : " characters"),
+    ];
     if (removed || converted) {
       var parts = [];
       if (removed)
@@ -387,7 +389,7 @@
   // Tracks each row's last-rendered HTML, keyed by entry id and computed
   // purely from that entry's model data - deliberately never read back
   // from the live DOM, since the live DOM can carry transient visual
-  // state (e.g. a "Downloaded!" flash - see flashButtonLabel) that isn't
+  // state (e.g. a "Downloaded" flash - see flashButtonLabel) that isn't
   // part of the entry's own data and shouldn't count as a "change".
   var lastRowHtml = {};
 
@@ -519,7 +521,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    ClearTXT.flashButtonLabel(downloadAllBtn, "Downloaded!");
+    ClearTXT.flashButtonLabel(downloadAllBtn, "Downloaded");
   });
 
   removeUnchangedBtn.addEventListener("click", function () {

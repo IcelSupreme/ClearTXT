@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <!-- Icons: Phosphor Icons (https://phosphoricons.com), MIT License, Copyright (c) 2023 Phosphor Icons. Full license: licenses/phosphor.txt at the site root. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClearTXT - Clean, Safe Text Filter</title>
-<meta name="description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text - free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
+<title>ClearTXT - Clean, safe text filter</title>
+<meta name="description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text. It's free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://icelsupreme.github.io/ClearTXT/">
-<meta property="og:title" content="ClearTXT - Clean, Safe Text Filter">
-<meta property="og:description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text - free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
+<meta property="og:title" content="ClearTXT - Clean, safe text filter">
+<meta property="og:description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text. It's free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
 <meta property="og:image" content="https://icelsupreme.github.io/ClearTXT/social-card.png?v=1.14.1">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="900">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ClearTXT - Clean, Safe Text Filter">
-<meta name="twitter:description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text - free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
+<meta name="twitter:title" content="ClearTXT - Clean, safe text filter">
+<meta name="twitter:description" content="Strip smart quotes, em dashes, emoji, and invisible characters from pasted text. It's free, and none of your text ever leaves your browser. Made by Aviv M. Icel.">
 <meta name="twitter:image" content="https://icelsupreme.github.io/ClearTXT/social-card.png?v=1.14.1">
 <!-- Lucide's "broom-sparkles" - sweeping away the mess, matching the
      page's own tagline ("a clean, safe character set"). Colors are
@@ -44,7 +44,7 @@
 <body>
   <header>
     <h1><svg class="logoIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M237.24,213.21C216.12,203,204,180.64,204,152V134.73a19.94,19.94,0,0,0-12.62-18.59l-24.86-9.81a4,4,0,0,1-2.26-5.14l21.33-53A32,32,0,0,0,167.17,6,32.13,32.13,0,0,0,126.25,24.2l-.07.18-21,53.09a3.94,3.94,0,0,1-2.14,2.2,3.89,3.89,0,0,1-3,.06L74.6,69.43A19.89,19.89,0,0,0,52.87,74C31.06,96.43,20,122.68,20,152a115.46,115.46,0,0,0,32.29,80.3A12,12,0,0,0,61,236H232a12,12,0,0,0,5.24-22.79ZM68.19,92.73,91.06,102A28,28,0,0,0,127.5,86.31l20.95-53a8.32,8.32,0,0,1,10.33-4.81,8,8,0,0,1,4.61,10.57,1.17,1.17,0,0,0,0,.11L142,92.29a28.05,28.05,0,0,0,15.68,36.33L180,137.45V152c0,1,0,2.07.05,3.1l-122.44-49A101.91,101.91,0,0,1,68.19,92.73ZM116.74,212a83.73,83.73,0,0,1-22.09-39,12,12,0,0,0-23.25,6,110.27,110.27,0,0,0,14.49,33H66.25A91.53,91.53,0,0,1,44,152a84,84,0,0,1,3.41-24.11l136.67,54.66A86.58,86.58,0,0,0,198.66,212Z"/></svg>ClearTXT <span class="version" title="Version, matches package.json">v1.14.1</span></h1>
-    <p>Strip text down to a clean, safe character set - everything else is removed.</p>
+    <p>Strip text down to a clean, safe character set. Everything else is removed.</p>
     <nav class="toolsNav" aria-label="Tools">
       <a href="index.html" class="toolsNavLink is-active" aria-current="page">Single-file</a>
       <a href="batch/" class="toolsNavLink">Batch</a>
@@ -104,15 +104,15 @@
       <div class="diffCounts" id="diffCounts"></div>
       <div id="diffNote" class="muted" style="display:none;font-size:.8rem;margin-top:6px;color:var(--muted);"></div>
       <div class="legend">
-        <span><i class="sw removed"></i>removed</span>
-        <span><i class="sw converted"></i>converted (fixed, not deleted)</span>
-        <span><i class="sw invisible"></i>invisible/control character (a thin ring - it has no width of its own to highlight)</span>
+        <span><i class="sw removed"></i>Removed</span>
+        <span><i class="sw converted"></i>Converted (fixed, not deleted)</span>
+        <span><i class="sw invisible"></i>Invisible or control character (a thin ring, since it has no width of its own to highlight)</span>
       </div>
     </details>
 
     <details>
-      <summary>Fixes &amp; explanation</summary>
-      <p style="color:var(--muted);font-size:.9rem;">Choose which fixes to apply, grouped below - each group's checkbox toggles every fix in it at once. A fix that's off leaves its characters untouched; anything none of them can convert is removed.</p>
+      <summary>Fixes and explanation</summary>
+      <p style="color:var(--muted);font-size:.9rem;">Choose which fixes to apply, grouped below. Each group's checkbox toggles every fix in it at once. A fix that's off leaves its characters untouched; anything none of them can convert is removed.</p>
       <div class="fixActions">
         <button id="restoreDefaultsBtn" title="Reset every fix (and the em dash target) back to its default"><svg class="btnIcon" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M228,128a100,100,0,0,1-98.66,100H128a99.39,99.39,0,0,1-68.62-27.29,12,12,0,0,1,16.48-17.45,76,76,0,1,0-1.57-109c-.13.13-.25.25-.39.37L54.89,92H72a12,12,0,0,1,0,24H24a12,12,0,0,1-12-12V56a12,12,0,0,1,24,0V76.72L57.48,57.06A100,100,0,0,1,228,128Z"/></svg><span class="btnLabel">Restore defaults</span></button>
       </div>
@@ -121,13 +121,13 @@
         <div class="fixGroup">
           <div class="fixGroupHeader">
             <input type="checkbox" id="groupToggle-typography" class="groupToggleInput">
-            <label for="groupToggle-typography" class="fixGroupTitle">Typography &amp; normalization</label>
+            <label for="groupToggle-typography" class="fixGroupTitle">Typography and normalization</label>
           </div>
           <label class="fixRow">
             <input type="checkbox" id="optNormalize" checked>
             <span class="fixText">
               <strong>Normalize Unicode (NFKC)</strong>
-              <div>Folds ligatures, full-width letters and superscripts into plain forms (<code>ﬁ</code>→<code>fi</code>, <code>Ａ</code>→<code>A</code>, <code>²</code>→<code>2</code>).</div>
+              <div>Folds ligatures, full-width letters, and superscripts into plain forms (<code>ﬁ</code>→<code>fi</code>, <code>Ａ</code>→<code>A</code>, <code>²</code>→<code>2</code>).</div>
             </span>
           </label>
           <label class="fixRow">
@@ -146,7 +146,7 @@
                   <option value="–">to an en dash (–)</option>
                 </select>
               </strong>
-              <div>Converts em dashes (<code>—</code>). En dashes, hyphens and minus signs (<code>– − ‐ ‑</code>) are always preserved, regardless of this toggle.</div>
+              <div>Converts em dashes (<code>—</code>). En dashes, hyphens, and minus signs (<code>– − ‐ ‑</code>) are always preserved, regardless of this toggle.</div>
             </span>
           </label>
         </div>
@@ -154,7 +154,7 @@
         <div class="fixGroup">
           <div class="fixGroupHeader">
             <input type="checkbox" id="groupToggle-languages" class="groupToggleInput">
-            <label for="groupToggle-languages" class="fixGroupTitle">Languages &amp; scripts</label>
+            <label for="groupToggle-languages" class="fixGroupTitle">Languages and scripts</label>
           </div>
           <label class="fixRow">
             <input type="checkbox" id="optFoldAccents" checked>
@@ -167,14 +167,14 @@
             <input type="checkbox" id="optStripHebrew" checked>
             <span class="fixText">
               <strong>Strip Hebrew characters</strong>
-              <div>Removes Hebrew letters, niqqud/cantillation points and punctuation (<code>א–ת</code>). Turn off to keep Hebrew text as-is.</div>
+              <div>Removes Hebrew letters, niqqud and cantillation points, and punctuation (<code>א–ת</code>). Turn off to keep Hebrew text as-is.</div>
             </span>
           </label>
           <label class="fixRow">
             <input type="checkbox" id="optStripArabic" checked>
             <span class="fixText">
               <strong>Strip Arabic characters</strong>
-              <div>Removes Arabic letters, diacritics and Arabic-Indic digits (<code>ا–ي</code>), including the Persian/Urdu extended blocks. Turn off to keep Arabic text as-is.</div>
+              <div>Removes Arabic letters, diacritics, and Arabic-Indic digits (<code>ا–ي</code>), including the Persian and Urdu extended blocks. Turn off to keep Arabic text as-is.</div>
             </span>
           </label>
           <label class="fixRow">
@@ -189,41 +189,41 @@
         <div class="fixGroup">
           <div class="fixGroupHeader">
             <input type="checkbox" id="groupToggle-symbols" class="groupToggleInput">
-            <label for="groupToggle-symbols" class="fixGroupTitle">Symbols &amp; invisible characters</label>
+            <label for="groupToggle-symbols" class="fixGroupTitle">Symbols and invisible characters</label>
           </div>
           <label class="fixRow">
             <input type="checkbox" id="optStripEmoji" checked>
             <span class="fixText">
-              <strong>Strip emoji &amp; symbols</strong>
-              <div>Removes emoji and other symbols (<code>± × ÷ ≤ ≥ √</code> …) that nothing above converts. Turn off to keep them as-is.</div>
+              <strong>Strip emoji and symbols</strong>
+              <div>Removes emoji and other symbols that nothing above converts, such as <code>± × ÷ ≤ ≥ √</code>. Turn off to keep them as-is.</div>
             </span>
           </label>
           <label class="fixRow">
             <input type="checkbox" id="optStripCurrency" checked>
             <span class="fixText">
               <strong>Strip currency symbols</strong>
-              <div>Removes currency symbols (<code>€ £ ¥ ₹ ₩ ₽ ¢</code> …) when "Strip emoji &amp; symbols" above is also on. Turn off to keep them regardless. <code>$</code> is always kept.</div>
+              <div>Removes currency symbols, such as <code>€ £ ¥ ₹ ₩ ₽ ¢</code>, when "Strip emoji and symbols" above is also on. Turn off to keep them regardless. <code>$</code> is always kept.</div>
             </span>
           </label>
           <label class="fixRow">
             <input type="checkbox" id="optStripInvisible" checked>
             <span class="fixText">
-              <strong>Strip invisible &amp; control characters</strong>
-              <div>Removes zero-width characters (ZWSP, ZWJ, BOM), bidi marks/isolates (used in "Trojan Source" spoofing), control characters, hidden Unicode tag characters, and deprecated variation selectors. Turn off to keep them as-is.</div>
+              <strong>Strip invisible and control characters</strong>
+              <div>Removes zero-width characters (ZWSP, ZWJ, BOM), bidi marks and isolates (used in "Trojan Source" spoofing), control characters, hidden Unicode tag characters, and deprecated variation selectors. Turn off to keep them as-is.</div>
             </span>
           </label>
           <label class="fixRow">
             <input type="checkbox" id="optStripHomoglyphs" checked>
             <span class="fixText">
               <strong>Strip look-alike characters</strong>
-              <div>Removes letters from another script (Greek, Armenian, ...) mixed into an otherwise-Latin word - a common trick for disguising a fake domain or brand name as the real one (e.g. a Greek "ο" in <code>gοogle.com</code>, a Cyrillic "а" in <code>pаypal.com</code>). A word written entirely in another language is left alone - only script-mixing within a single word is flagged.</div>
+              <div>Removes letters from another script, such as Greek or Armenian, mixed into an otherwise-Latin word. This is a common trick for disguising a fake domain or brand name as the real one (for example, a Greek "ο" in <code>gοogle.com</code>, a Cyrillic "а" in <code>pаypal.com</code>). A word written entirely in another language is left alone: only script-mixing within a single word is flagged.</div>
             </span>
           </label>
           <label class="fixRow">
             <input type="checkbox" id="optStripUnsafeLinks" checked>
             <span class="fixText">
               <strong>Strip unsafe link protocols</strong>
-              <div>Removes a Markdown link's target (keeping its visible text) when it points somewhere other than <code>http:</code>, <code>https:</code>, <code>mailto:</code>, or <code>tel:</code> - clicking a link with an unexpected protocol in another app can load or run a local or remote file with no further warning. A relative or same-page link (<code>./page.html</code>, <code>#section</code>) is always left alone.</div>
+              <div>Removes a Markdown link's target (keeping its visible text) when it points somewhere other than <code>http:</code>, <code>https:</code>, <code>mailto:</code>, or <code>tel:</code>. Clicking a link with an unexpected protocol in another app can load or run a local or remote file with no further warning. A relative or same-page link (<code>./page.html</code>, <code>#section</code>) is always left alone.</div>
             </span>
           </label>
         </div>

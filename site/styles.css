@@ -115,7 +115,7 @@ header p {
   max-width: 1100px;
   margin: 0 auto;
   /* Extra bottom padding reserves room for .stickyFooter, so it never
-     overlaps the end of the "Fixes & explanation" panel when visible. */
+     overlaps the end of the "Fixes and explanation" panel when visible. */
   padding: 16px 20px 64px;
 }
 .grid {

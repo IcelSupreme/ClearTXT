@@ -407,7 +407,10 @@
       reportTile(
         "Characters",
         s.charsA.toLocaleString() + " → " + s.charsB.toLocaleString(),
-        deltaText(s.charsB - s.charsA, "chars"),
+        deltaText(
+          s.charsB - s.charsA,
+          Math.abs(s.charsB - s.charsA) === 1 ? "character" : "characters",
+        ),
       ),
       reportTile(
         "Words",
@@ -428,7 +431,7 @@
     var s = computeReportStats(aText, bText);
     return (
       [
-        "ClearTXT Comparison Report",
+        "ClearTXT comparison report",
         "Generated: " + new Date().toLocaleString(),
         "Markdown syntax: " +
           (s.keepMarkdown ? "included" : "excluded") +
@@ -445,7 +448,9 @@
           s.charsB.toLocaleString() +
           " (" +
           signedNumber(s.charsB - s.charsA) +
-          " chars)",
+          (Math.abs(s.charsB - s.charsA) === 1
+            ? " character)"
+            : " characters)"),
         "Words: " +
           s.wordsA.toLocaleString() +
           " → " +
@@ -480,8 +485,10 @@
 
     var result = ClearTXT.diffLines(displayA, displayB);
 
-    countA.textContent = Array.from(displayA).length + " chars";
-    countB.textContent = Array.from(displayB).length + " chars";
+    var lenA = Array.from(displayA).length;
+    var lenB = Array.from(displayB).length;
+    countA.textContent = lenA + (lenA === 1 ? " character" : " characters");
+    countB.textContent = lenB + (lenB === 1 ? " character" : " characters");
 
     renderDiffSummary(result);
     renderHighlights(result);
@@ -620,7 +627,7 @@
 
   copyReportBtn.addEventListener("click", function () {
     if (navigator.clipboard) navigator.clipboard.writeText(buildReportText());
-    ClearTXT.flashButtonLabel(copyReportBtn, "Copied!");
+    ClearTXT.flashButtonLabel(copyReportBtn, "Copied");
   });
 
   downloadReportBtn.addEventListener("click", function () {
@@ -636,7 +643,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    ClearTXT.flashButtonLabel(downloadReportBtn, "Downloaded!");
+    ClearTXT.flashButtonLabel(downloadReportBtn, "Downloaded");
   });
 
   var fixOptions = ClearTXT.createFixOptionsController();

@@ -478,7 +478,7 @@ test("summarizeChanges and formatCatCounts report accurate per-category totals",
   const { changes } = ClearTXT.processText("café “world” 😀", opts());
   const sums = ClearTXT.summarizeChanges(changes);
   assert.equal(ClearTXT.formatCatCounts(sums.converted), "1 accents, 2 quotes");
-  assert.equal(ClearTXT.formatCatCounts(sums.removed), "1 emoji/symbols");
+  assert.equal(ClearTXT.formatCatCounts(sums.removed), "1 emoji and symbols");
 });
 
 test("formatCatCounts labels the currency category distinctly from generic emoji/symbols", () => {
