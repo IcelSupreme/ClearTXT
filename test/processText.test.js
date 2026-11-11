@@ -666,6 +666,14 @@ test('exportFilename builds "cleartxt-<slug>-<timestamp>.txt" from the first lin
   );
 });
 
+test("exportFilename uses the given extension, for the Convert page's .md", () => {
+  const now = new Date(2026, 0, 5, 9, 3, 7);
+  assert.equal(
+    ClearTXT.exportFilename("Hello World\nrest", now, ".md"),
+    "cleartxt-Hello-World-20260105-090307.md",
+  );
+});
+
 test("exportFilename falls back to a generic name when there's no usable slug", () => {
   const now = new Date(2026, 0, 5, 9, 3, 7);
   assert.equal(

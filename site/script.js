@@ -1119,14 +1119,14 @@
   // Builds the exported filename from the output's first line plus a
   // timestamp, e.g. "cleartxt-hello-world-20260812-104015.txt", falling
   // back to a generic name when the first line yields no usable slug.
-  function exportFilename(text, now) {
+  function exportFilename(text, now, extension) {
     var slug = slugForFilename(text);
     return (
       "cleartxt-" +
       (slug || "output") +
       "-" +
       fileTimestamp(now || new Date()) +
-      ".txt"
+      (extension || ".txt")
     );
   }
 
@@ -1788,6 +1788,80 @@
   // the Fixes panel via createFixOptionsController) - nothing past this
   // point applies there.
   if (!input) return;
+  // The Convert page reuses this whole page with its input box marked
+  // data-format="html": what's typed there is HTML, turned into Markdown
+  // before the fixes run. Its marks show in the output box only, since
+  // the input's characters don't line up with the Markdown's.
+  var htmlInput = input.getAttribute("data-format") === "html";
+
+  // Turndown settings for the Convert page. Product settings: see
+  // docs/guides/product-settings.md, "Convert page".
+  var TURNDOWN_OPTIONS = {
+    headingStyle: "atx", // "atx" (# Heading) or "setext" (underlined)
+    hr: "---", // the thematic break written for <hr>
+    bulletListMarker: "-", // "-", "*", or "+"
+    codeBlockStyle: "fenced", // "fenced" (```) or "indented"
+    fence: "```", // "```" or "~~~"
+    emDelimiter: "_", // "_" or "*", for <em>
+    strongDelimiter: "**", // "**" or "__", for <strong>
+  };
+  // Elements dropped with everything inside them, so their text doesn't
+  // leak into the Markdown: page metadata, code, and styles.
+  var TURNDOWN_REMOVE = [
+    "head",
+    "title",
+    "script",
+    "style",
+    "noscript",
+    "template",
+  ];
+
+  // A GitHub table needs a header row, and the GFM add-on keeps any table
+  // without one as raw HTML. So a table whose first row isn't a header
+  // gets that row promoted: its cells become header cells. A table with no
+  // rows holds nothing and is dropped, since the add-on fails on it.
+  function promoteFirstRowsToHeaders(doc) {
+    var tables = doc.querySelectorAll("table");
+    for (var t = 0; t < tables.length; t++) {
+      var row = tables[t].rows[0];
+      if (!row) {
+        tables[t].remove();
+        continue;
+      }
+      // The add-on also misses the first row after a <caption>, so the
+      // caption moves out into a paragraph just before the table.
+      var caption = tables[t].caption;
+      if (caption) {
+        var p = doc.createElement("p");
+        while (caption.firstChild) p.appendChild(caption.firstChild);
+        tables[t].before(p);
+        caption.remove();
+      }
+      if (row.parentNode.nodeName === "THEAD") continue;
+      var cells = Array.prototype.slice.call(row.cells);
+      for (var c = 0; c < cells.length; c++) {
+        if (cells[c].nodeName === "TH") continue;
+        var th = doc.createElement("th");
+        while (cells[c].firstChild) th.appendChild(cells[c].firstChild);
+        cells[c].replaceWith(th);
+      }
+    }
+  }
+
+  var turndownService = null;
+  // DOMParser builds an inert document: no script in it runs, and nothing
+  // it links to loads. Turndown then works on that document's body.
+  function htmlToMarkdown(html) {
+    if (!turndownService) {
+      turndownService = new root.TurndownService(TURNDOWN_OPTIONS);
+      turndownService.use(root.turndownPluginGfm.gfm);
+      turndownService.remove(TURNDOWN_REMOVE);
+    }
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    promoteFirstRowsToHeaders(doc);
+    return turndownService.turndown(doc.body);
+  }
+
   var output = document.getElementById("output");
   var inGutter = document.getElementById("inGutter");
   var outGutter = document.getElementById("outGutter");
@@ -2167,8 +2241,10 @@
 
     clearCurrentDiffLine();
 
-    scrollLineIntoView(input, inGutter, inHighlight, lineNo);
-    markCurrentDiffLine(inHighlight, lineNo);
+    if (!htmlInput) {
+      scrollLineIntoView(input, inGutter, inHighlight, lineNo);
+      markCurrentDiffLine(inHighlight, lineNo);
+    }
 
     var outLineCount = output.value.length
       ? output.value.split("\n").length
@@ -2260,7 +2336,7 @@
         changes.length.toLocaleString() +
         " characters, for performance (the counts above cover the full text).";
       diffNote.style.display = "";
-    } else if (inputOverlay === null) {
+    } else if (inputOverlay === null && !htmlInput) {
       diffNote.textContent =
         "Inline highlighting isn't available for this input (Unicode normalization changed its length). The counts above are still accurate.";
       diffNote.style.display = "";
@@ -2303,17 +2379,21 @@
     var opts = fixOptions.readOpts();
     fixOptions.saveOpts(opts);
 
-    var src = input.value;
+    var src = htmlInput ? htmlToMarkdown(input.value) : input.value;
     var result = processText(src, opts);
     output.value = result.output;
 
     // Computed once and threaded through renderDiff/lineChangedFlags below
     // instead of each being separately re-derived from `src`/`result.changes`
     // twice more further down - see rawCharsForInput/outputCharsAndEntries.
-    var rawChars = rawCharsForInput(src, result.changes);
+    var rawChars = htmlInput ? null : rawCharsForInput(src, result.changes);
     var outputCE = outputCharsAndEntries(result.changes);
 
-    var inLen = rawChars === null ? [...src].length : rawChars.length;
+    var inLen = htmlInput
+      ? [...input.value].length
+      : rawChars === null
+        ? [...src].length
+        : rawChars.length;
     var outLen = outputCE.chars.length;
     inCount.textContent = inLen + (inLen === 1 ? " character" : " characters");
     outCount.textContent =
@@ -2329,6 +2409,8 @@
     var statsHtml;
     if (inLen === 0) {
       statsHtml = "";
+    } else if (htmlInput && !src.trim()) {
+      statsHtml = "No text found in this HTML";
     } else if (removedCount === 0 && convertedCount === 0) {
       statsHtml = "Nothing changed: text is already clean";
     } else {
@@ -2472,7 +2554,11 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = exportFilename(output.value);
+    a.download = exportFilename(
+      output.value,
+      undefined,
+      htmlInput ? ".md" : ".txt",
+    );
     document.body.appendChild(a);
     a.click();
     a.remove();

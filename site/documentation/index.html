@@ -32,6 +32,7 @@
       <a href="../" class="toolsNavLink">Single-file</a>
       <a href="../batch/" class="toolsNavLink">Batch</a>
       <a href="../compare/" class="toolsNavLink">Compare</a>
+      <a href="../convert/" class="toolsNavLink">Convert</a>
     </nav>
   </header>
 
@@ -87,6 +88,14 @@
     </section>
 
     <section class="docSection">
+      <h2>How Convert turns HTML into Markdown</h2>
+      <p>The <a href="../convert/">Convert</a> page turns HTML into Markdown in your browser, using Turndown and its GitHub Flavored Markdown add-on. Headings, paragraphs, links, images, lists, code, quotes, tables, strikethrough, and task lists each become their Markdown form.</p>
+      <p>The page reads the HTML without running it: scripts don't run, and images, styles, and other files that the HTML points to aren't loaded.</p>
+      <p>The Markdown then goes through the same fixes as the other tools, with the same settings. For example, "Strip unsafe link protocols" checks every link the HTML contained.</p>
+      <p>Convert doesn't fetch pages from a web address. To convert a web page, open its source in your browser, copy it, and paste it here.</p>
+    </section>
+
+    <section class="docSection">
       <h2>What this page doesn't cover</h2>
       <ul>
         <li>ClearTXT cleans characters, not meaning. It can strip a hidden instruction's invisible packaging, but it can't judge whether the visible text left behind is itself trying to manipulate you.</li>
@@ -98,6 +107,7 @@
     <section class="docSection">
       <h2>Credits and attribution</h2>
       <p>Icons by <a href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">Phosphor Icons</a>, <a href="../licenses/phosphor.txt">MIT License</a>.</p>
+      <p>Markdown conversion by <a href="https://github.com/mixmark-io/turndown" target="_blank" rel="noopener noreferrer">Turndown</a> and <a href="https://github.com/domchristie/turndown-plugin-gfm" target="_blank" rel="noopener noreferrer">turndown-plugin-gfm</a>, <a href="../licenses/turndown.txt">MIT License</a>.</p>
     </section>
 
     <p class="pageCredit">Made by <a href="https://github.com/icelsupreme" target="_blank" rel="noopener noreferrer">Aviv M. Icel</a> &middot; <a href="https://bsky.app/profile/icel.me" target="_blank" rel="noopener noreferrer">Bluesky</a> &middot; <a href="../changelog/">Changelog</a></p>
