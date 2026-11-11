@@ -1057,6 +1057,35 @@
   // filename, before the timestamp suffix is appended.
   var EXPORT_SLUG_MAX = 50;
 
+  // Builds a YAML front matter block from `fields`, a list of [name, value]
+  // pairs, for the Convert page. A field whose value is empty is left out,
+  // and no fields at all give "". Each value is collapsed onto one line.
+  // It's written plain when that's unambiguous YAML; otherwise as a
+  // one-line literal block ("|-"), which stays valid whatever the fixes
+  // later do to its characters, such as turning a smart quote into '"'.
+  // The block is indented one space, so "Remove extra spaces" has nothing
+  // in it to collapse.
+  var YAML_PLAIN_SAFE = /^[\p{L}\p{N}][\p{L}\p{N} .,/()+@%=_?&~:#-]*$/u;
+  // ": ", " #", and a closing ":" would end or comment out a plain value.
+  var YAML_PLAIN_BREAK = /: | #|:$/;
+  var YAML_PLAIN_SPECIAL = /^(true|false|null|yes|no|on|off|~)$/i;
+  function yamlValue(value) {
+    var safe =
+      YAML_PLAIN_SAFE.test(value) &&
+      !YAML_PLAIN_BREAK.test(value) &&
+      !YAML_PLAIN_SPECIAL.test(value) &&
+      Number.isNaN(Number(value));
+    return safe ? " " + value : " |-\n " + value;
+  }
+  function frontMatter(fields) {
+    var lines = [];
+    fields.forEach(function (field) {
+      var value = (field[1] || "").replace(/\s+/g, " ").trim();
+      if (value) lines.push(field[0] + ":" + yamlValue(value));
+    });
+    return lines.length ? "---\n" + lines.join("\n") + "\n---\n" : "";
+  }
+
   // Turns the first line of `text` into a short, filesystem-safe slug for
   // use in the exported filename: strips characters that are illegal (or
   // just awkward) in a filename on common OSes, collapses whitespace to
@@ -1701,6 +1730,7 @@
     findUnsafeLinkRanges: findUnsafeLinkRanges,
     foldAccent: foldAccent,
     slugForFilename: slugForFilename,
+    frontMatter: frontMatter,
     exportFilename: exportFilename,
     fileTimestamp: fileTimestamp,
     stripMarkdown: stripMarkdown,
@@ -1848,6 +1878,50 @@
     }
   }
 
+  // The page's metadata, kept as front matter (see frontMatter). Each field
+  // takes the first of its sources that has a value, in this order.
+  function metaContent(doc, selector) {
+    var el = doc.querySelector(selector);
+    return el ? el.getAttribute("content") || "" : "";
+  }
+  function htmlMetadata(doc) {
+    var titleEl = doc.querySelector("title");
+    var canonical = doc.querySelector('link[rel~="canonical" i]');
+    return [
+      [
+        "title",
+        (titleEl && titleEl.textContent.trim()) ||
+          metaContent(doc, 'meta[property="og:title" i]'),
+      ],
+      [
+        "description",
+        metaContent(doc, 'meta[name="description" i]') ||
+          metaContent(doc, 'meta[property="og:description" i]'),
+      ],
+      [
+        "source",
+        (canonical && canonical.getAttribute("href")) ||
+          metaContent(doc, 'meta[property="og:url" i]'),
+      ],
+      [
+        "author",
+        metaContent(doc, 'meta[name="author" i]') ||
+          metaContent(doc, 'meta[property="article:author" i]'),
+      ],
+      [
+        "published",
+        metaContent(doc, 'meta[property="article:published_time" i]'),
+      ],
+      [
+        "modified",
+        metaContent(doc, 'meta[property="article:modified_time" i]'),
+      ],
+      ["language", doc.documentElement.getAttribute("lang")],
+      ["site", metaContent(doc, 'meta[property="og:site_name" i]')],
+      ["image", metaContent(doc, 'meta[property="og:image" i]')],
+    ];
+  }
+
   var turndownService = null;
   // DOMParser builds an inert document: no script in it runs, and nothing
   // it links to loads. Turndown then works on that document's body.
@@ -1859,7 +1933,9 @@
     }
     var doc = new DOMParser().parseFromString(html, "text/html");
     promoteFirstRowsToHeaders(doc);
-    return turndownService.turndown(doc.body);
+    var meta = frontMatter(htmlMetadata(doc));
+    var body = turndownService.turndown(doc.body);
+    return meta && body ? meta + "\n" + body : meta + body;
   }
 
   var output = document.getElementById("output");

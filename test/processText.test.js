@@ -1003,3 +1003,48 @@ test("charDiffSegments: a fully-new line has no aSegs at all", () => {
   assert.deepEqual(result.aSegs, []);
   assert.deepEqual(result.bSegs, [{ text: "new", changed: true }]);
 });
+
+test("frontMatter leaves out empty fields, and gives nothing when every field is empty", () => {
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", ""],
+      ["author", null],
+      ["site", "   "],
+    ]),
+    "",
+  );
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", "My page"],
+      ["description", ""],
+      ["language", "en"],
+    ]),
+    "---\ntitle: My page\nlanguage: en\n---\n",
+  );
+});
+
+test("frontMatter writes plain values where YAML allows, and a one-line block otherwise", () => {
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", "Part 1: “Quotes” # and more"],
+      ["source", "https://example.com/a?b=c#top"],
+      ["published", "2026-11-11T10:00:00Z"],
+      ["site", "null"],
+      ["image", "42"],
+    ]),
+    "---\n" +
+      "title: |-\n Part 1: “Quotes” # and more\n" +
+      "source: https://example.com/a?b=c#top\n" +
+      "published: 2026-11-11T10:00:00Z\n" +
+      "site: |-\n null\n" +
+      "image: |-\n 42\n" +
+      "---\n",
+  );
+});
+
+test("frontMatter collapses a value onto one line", () => {
+  assert.equal(
+    ClearTXT.frontMatter([["title", "  Two\n  lines\tand tabs "]]),
+    "---\ntitle: Two lines and tabs\n---\n",
+  );
+});
