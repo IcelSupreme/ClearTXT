@@ -723,7 +723,12 @@
       }
     }
 
-    applyWhitespaceCleanup(changes, opts);
+    var frontMatterMatch = LEADING_FRONT_MATTER.exec(src);
+    applyWhitespaceCleanup(
+      changes,
+      opts,
+      frontMatterMatch ? Array.from(frontMatterMatch[0]).length : 0,
+    );
 
     var out = "";
     for (var o = 0; o < changes.length; o++) {
@@ -739,12 +744,21 @@
   // place; segments already marked "removed" by the first pass contribute
   // nothing and are skipped. Browsers normalize textarea line endings to a
   // single "\n" (no "\r\n"/"\r"), so only "\n" needs to be handled here.
-  function applyWhitespaceCleanup(changes, opts) {
+  //
+  // The first `protectedLength` characters keep their line breaks: that's
+  // a YAML front matter block opening the text (see LEADING_FRONT_MATTER),
+  // whose lines are its structure, so the line and paragraph break fixes
+  // would otherwise flatten it into one line that's no longer front matter.
+  // Its last character is the closing "---" line's own line break, which
+  // stays a line break; blank lines after it are cleaned like any others.
+  function applyWhitespaceCleanup(changes, opts, protectedLength) {
     var n = changes.length;
 
     // A run of one "\n" is a line break within a paragraph; a run of two or
     // more is a blank-line paragraph break. Each is governed independently.
-    var i = 0;
+    // The scan starts on the front matter's last character, so its closing
+    // line break and the blank lines after it are seen as one run.
+    var i = protectedLength ? protectedLength - 1 : 0;
     while (i < n) {
       var seg = changes[i];
       if (seg.type !== "removed" && seg.replacement === "\n") {
@@ -756,16 +770,19 @@
           changes[j].replacement === "\n"
         )
           j++;
+        var keepFirst = start < protectedLength;
         if (j - start === 1) {
-          if (opts.removeLineBreaks) {
+          if (opts.removeLineBreaks && !keepFirst) {
             changes[start].type = "converted";
             changes[start].category = "linebreak";
             changes[start].replacement = " ";
           }
         } else if (opts.removeParagraphBreaks) {
-          changes[start].type = "converted";
-          changes[start].category = "paragraph";
-          changes[start].replacement = " ";
+          if (!keepFirst) {
+            changes[start].type = "converted";
+            changes[start].category = "paragraph";
+            changes[start].replacement = " ";
+          }
           for (var k = start + 1; k < j; k++) {
             changes[k].type = "removed";
             changes[k].category = "paragraph";
@@ -1056,6 +1073,44 @@
   // Max length of the first-line-derived slug used in the exported
   // filename, before the timestamp suffix is appended.
   var EXPORT_SLUG_MAX = 50;
+
+  // A YAML front matter block opening the text: a "---" line, any lines,
+  // then a closing "---" line with its own line break.
+  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n|$)/;
+
+  // Builds a YAML front matter block from `fields`, a list of [name, value]
+  // pairs, for the Convert page. A field whose value is empty is left out,
+  // and no fields at all give "". Each value is collapsed onto one line.
+  // It's written plain when that's unambiguous YAML; otherwise as a
+  // one-line literal block ("|-"), which stays valid whatever the fixes
+  // later do to its characters, such as turning a smart quote into '"'.
+  // The block is indented one space, so "Remove extra spaces" has nothing
+  // in it to collapse.
+  //
+  // A plain value is ASCII only: the fixes change or remove non-ASCII
+  // characters, and removing one could leave a plain value invalid, as
+  // "News:א update" becomes "News: update" once the Hebrew letter goes.
+  // The fixes leave these ASCII characters as they are.
+  var YAML_PLAIN_SAFE = /^[A-Za-z0-9][A-Za-z0-9 .,/()+@%=_?&~:#-]*$/;
+  // ": ", " #", and a closing ":" would end or comment out a plain value.
+  var YAML_PLAIN_BREAK = /: | #|:$/;
+  var YAML_PLAIN_SPECIAL = /^(true|false|null|yes|no|on|off|~)$/i;
+  function yamlValue(value) {
+    var safe =
+      YAML_PLAIN_SAFE.test(value) &&
+      !YAML_PLAIN_BREAK.test(value) &&
+      !YAML_PLAIN_SPECIAL.test(value) &&
+      Number.isNaN(Number(value));
+    return safe ? " " + value : " |-\n " + value;
+  }
+  function frontMatter(fields) {
+    var lines = [];
+    fields.forEach(function (field) {
+      var value = (field[1] || "").replace(/\s+/g, " ").trim();
+      if (value) lines.push(field[0] + ":" + yamlValue(value));
+    });
+    return lines.length ? "---\n" + lines.join("\n") + "\n---\n" : "";
+  }
 
   // Turns the first line of `text` into a short, filesystem-safe slug for
   // use in the exported filename: strips characters that are illegal (or
@@ -1701,6 +1756,7 @@
     findUnsafeLinkRanges: findUnsafeLinkRanges,
     foldAccent: foldAccent,
     slugForFilename: slugForFilename,
+    frontMatter: frontMatter,
     exportFilename: exportFilename,
     fileTimestamp: fileTimestamp,
     stripMarkdown: stripMarkdown,
@@ -1848,6 +1904,54 @@
     }
   }
 
+  // The page's metadata, kept as front matter (see frontMatter). Each field
+  // takes the first of its sources that has a value, in this order. Every
+  // source is trimmed first, so one holding only spaces counts as empty
+  // and the next source is used, as frontMatter would drop it anyway.
+  function metaContent(doc, selector) {
+    var el = doc.querySelector(selector);
+    return el ? (el.getAttribute("content") || "").trim() : "";
+  }
+  function htmlMetadata(doc) {
+    var titleEl = doc.querySelector("title");
+    var canonical = doc.querySelector('link[rel~="canonical" i]');
+    var canonicalHref = canonical
+      ? (canonical.getAttribute("href") || "").trim()
+      : "";
+    return [
+      [
+        "title",
+        (titleEl && titleEl.textContent.trim()) ||
+          metaContent(doc, 'meta[property="og:title" i]'),
+      ],
+      [
+        "description",
+        metaContent(doc, 'meta[name="description" i]') ||
+          metaContent(doc, 'meta[property="og:description" i]'),
+      ],
+      [
+        "source",
+        canonicalHref || metaContent(doc, 'meta[property="og:url" i]'),
+      ],
+      [
+        "author",
+        metaContent(doc, 'meta[name="author" i]') ||
+          metaContent(doc, 'meta[property="article:author" i]'),
+      ],
+      [
+        "published",
+        metaContent(doc, 'meta[property="article:published_time" i]'),
+      ],
+      [
+        "modified",
+        metaContent(doc, 'meta[property="article:modified_time" i]'),
+      ],
+      ["language", doc.documentElement.getAttribute("lang")],
+      ["site", metaContent(doc, 'meta[property="og:site_name" i]')],
+      ["image", metaContent(doc, 'meta[property="og:image" i]')],
+    ];
+  }
+
   var turndownService = null;
   // DOMParser builds an inert document: no script in it runs, and nothing
   // it links to loads. Turndown then works on that document's body.
@@ -1859,7 +1963,9 @@
     }
     var doc = new DOMParser().parseFromString(html, "text/html");
     promoteFirstRowsToHeaders(doc);
-    return turndownService.turndown(doc.body);
+    var meta = frontMatter(htmlMetadata(doc));
+    var body = turndownService.turndown(doc.body);
+    return meta && body ? meta + "\n" + body : meta + body;
   }
 
   var output = document.getElementById("output");

@@ -1003,3 +1003,104 @@ test("charDiffSegments: a fully-new line has no aSegs at all", () => {
   assert.deepEqual(result.aSegs, []);
   assert.deepEqual(result.bSegs, [{ text: "new", changed: true }]);
 });
+
+test("frontMatter leaves out empty fields, and gives nothing when every field is empty", () => {
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", ""],
+      ["author", null],
+      ["site", "   "],
+    ]),
+    "",
+  );
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", "My page"],
+      ["description", ""],
+      ["language", "en"],
+    ]),
+    "---\ntitle: My page\nlanguage: en\n---\n",
+  );
+});
+
+test("frontMatter writes plain values where YAML allows, and a one-line block otherwise", () => {
+  assert.equal(
+    ClearTXT.frontMatter([
+      ["title", "Part 1: “Quotes” # and more"],
+      ["source", "https://example.com/a?b=c#top"],
+      ["published", "2026-11-11T10:00:00Z"],
+      ["site", "null"],
+      ["image", "42"],
+    ]),
+    "---\n" +
+      "title: |-\n Part 1: “Quotes” # and more\n" +
+      "source: https://example.com/a?b=c#top\n" +
+      "published: 2026-11-11T10:00:00Z\n" +
+      "site: |-\n null\n" +
+      "image: |-\n 42\n" +
+      "---\n",
+  );
+});
+
+test("frontMatter collapses a value onto one line", () => {
+  assert.equal(
+    ClearTXT.frontMatter([["title", "  Two\n  lines\tand tabs "]]),
+    "---\ntitle: Two lines and tabs\n---\n",
+  );
+});
+
+test("the line and paragraph break fixes keep a front matter block that opens the text", () => {
+  const text =
+    "---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line\nsecond line\n\nNext paragraph";
+  const { output } = ClearTXT.processText(
+    text,
+    opts({ removeLineBreaks: true, removeParagraphBreaks: true }),
+  );
+  assert.equal(
+    output,
+    "---\ntitle: One\nsite: |-\n Two\n---\nFirst line second line Next paragraph",
+  );
+});
+
+test("blank lines after front matter follow the paragraph break fix, and the closing line break stays", () => {
+  const text = "---\na: b\n---\n\n\nBody\nmore";
+  assert.equal(
+    ClearTXT.processText(text, opts({ removeParagraphBreaks: true })).output,
+    "---\na: b\n---\nBody\nmore",
+  );
+  assert.equal(
+    ClearTXT.processText(text, opts({ removeLineBreaks: true })).output,
+    "---\na: b\n---\n\n\nBody more",
+  );
+  assert.equal(
+    ClearTXT.processText(
+      "---\na: b\n---\nBody",
+      opts({ removeLineBreaks: true }),
+    ).output,
+    "---\na: b\n---\nBody",
+  );
+});
+
+test("the line break fix still joins lines when the text doesn't open with front matter", () => {
+  const { output } = ClearTXT.processText(
+    "Intro\n---\ntitle: One\n---",
+    opts({ removeLineBreaks: true }),
+  );
+  assert.equal(output, "Intro --- title: One ---");
+});
+
+test("front matter stays valid after the default fixes change a value's characters", () => {
+  const block = ClearTXT.frontMatter([
+    ["title", "News:א update"],
+    ["author", "Zoë Ruiz"],
+    ["site", "Plain ASCII site"],
+  ]);
+  assert.equal(
+    block,
+    "---\ntitle: |-\n News:א update\nauthor: |-\n Zoë Ruiz\nsite: Plain ASCII site\n---\n",
+  );
+  assert.equal(
+    ClearTXT.processText(block, opts()).output,
+    "---\ntitle: |-\n News: update\nauthor: |-\n Zoe Ruiz\nsite: Plain ASCII site\n---\n",
+  );
+});
