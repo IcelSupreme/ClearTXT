@@ -1048,3 +1048,28 @@ test("frontMatter collapses a value onto one line", () => {
     "---\ntitle: Two lines and tabs\n---\n",
   );
 });
+
+test("the line and paragraph break fixes keep a front matter block that opens the text", () => {
+  const text =
+    "---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line\nsecond line\n\nNext paragraph";
+  const { output } = ClearTXT.processText(
+    text,
+    opts({ removeLineBreaks: true, removeParagraphBreaks: true }),
+  );
+  assert.ok(
+    output.startsWith("---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line"),
+    JSON.stringify(output),
+  );
+  assert.ok(
+    output.endsWith("First line second line Next paragraph"),
+    JSON.stringify(output),
+  );
+});
+
+test("the line break fix still joins lines when the text doesn't open with front matter", () => {
+  const { output } = ClearTXT.processText(
+    "Intro\n---\ntitle: One\n---",
+    opts({ removeLineBreaks: true }),
+  );
+  assert.equal(output, "Intro --- title: One ---");
+});

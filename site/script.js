@@ -723,7 +723,12 @@
       }
     }
 
-    applyWhitespaceCleanup(changes, opts);
+    var frontMatterMatch = LEADING_FRONT_MATTER.exec(src);
+    applyWhitespaceCleanup(
+      changes,
+      opts,
+      frontMatterMatch ? Array.from(frontMatterMatch[0]).length : 0,
+    );
 
     var out = "";
     for (var o = 0; o < changes.length; o++) {
@@ -739,12 +744,17 @@
   // place; segments already marked "removed" by the first pass contribute
   // nothing and are skipped. Browsers normalize textarea line endings to a
   // single "\n" (no "\r\n"/"\r"), so only "\n" needs to be handled here.
-  function applyWhitespaceCleanup(changes, opts) {
+  //
+  // The first `protectedLength` characters keep their line breaks: that's
+  // a YAML front matter block opening the text (see LEADING_FRONT_MATTER),
+  // whose lines are its structure, so the line and paragraph break fixes
+  // would otherwise flatten it into one line that's no longer front matter.
+  function applyWhitespaceCleanup(changes, opts, protectedLength) {
     var n = changes.length;
 
     // A run of one "\n" is a line break within a paragraph; a run of two or
     // more is a blank-line paragraph break. Each is governed independently.
-    var i = 0;
+    var i = protectedLength || 0;
     while (i < n) {
       var seg = changes[i];
       if (seg.type !== "removed" && seg.replacement === "\n") {
@@ -1056,6 +1066,10 @@
   // Max length of the first-line-derived slug used in the exported
   // filename, before the timestamp suffix is appended.
   var EXPORT_SLUG_MAX = 50;
+
+  // A YAML front matter block opening the text: a "---" line, any lines,
+  // then a closing "---" line, with the line breaks that follow it.
+  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n+|$)/;
 
   // Builds a YAML front matter block from `fields`, a list of [name, value]
   // pairs, for the Convert page. A field whose value is empty is left out,
