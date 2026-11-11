@@ -207,7 +207,7 @@
       return {
         label: "TAG",
         name:
-          "Unicode tag character - can carry invisible hidden text (" +
+          "Unicode tag character: can carry invisible hidden text (" +
           hex4(cp) +
           ")",
       };
@@ -223,8 +223,8 @@
   }
 
   var CAT_LABEL = {
-    invisible: "invisible/control",
-    symbol: "emoji/symbols",
+    invisible: "invisible and control",
+    symbol: "emoji and symbols",
     dash: "dashes",
     accent: "accents",
     quote: "quotes",
@@ -692,7 +692,7 @@
 
       // A currency symbol would otherwise fall into the generic
       // emoji/symbol bucket below - stripped only when BOTH toggles agree
-      // to strip it: the general "Strip emoji & symbols" switch, and this
+      // to strip it: the general "Strip emoji and symbols" switch, and this
       // category's own toggle (checked = stripped, same "checked = the
       // action happens" convention every other fix toggle uses).
       if (isCurrencySymbol(ch)) {
@@ -1066,7 +1066,7 @@
   // Also strips Unicode Format-category/bidi-control characters and the
   // hidden-payload ranges (the same ones isFormatChar/isHiddenPayloadRange
   // catch in the main pipeline) unconditionally, not just when "Strip
-  // invisible & control characters" is on: those govern what survives in
+  // invisible and control characters" is on: those govern what survives in
   // the TEXT you see in the output box, but a filename is a different
   // context entirely - it becomes a real OS-level name in a Save dialog
   // and file listings, not scrollable text with room for a labeled
@@ -1724,7 +1724,7 @@
   if (typeof document === "undefined") return;
 
   // Milliseconds a button's label stays showing a transient status
-  // ("Copied!", "Exported!", "Downloaded!", ...) before reverting to its
+  // ("Copied", "Exported", "Downloaded", ...) before reverting to its
   // normal text. Shared (via the ClearTXT export above) by both this
   // page's own buttons below and batch.html's, so the pattern only has to
   // live - and be fixed - in one place. This assignment (unlike a plain
@@ -1746,8 +1746,8 @@
   // as the "original" to revert to. Without this, two clicks within the
   // window could leave the button stuck showing the flash text forever:
   // the first timer correctly reverts at t=1200ms, but the second timer
-  // (which captured "Copied!" as its own "original") then overwrites that
-  // correct revert right back to "Copied!" when it fires.
+  // (which captured "Copied" as its own "original") then overwrites that
+  // correct revert right back to "Copied" when it fires.
   function flashButtonLabel(btn, text) {
     if (!btn) return;
     // Targets the .btnLabel span, not the button itself - buttons also
@@ -1778,7 +1778,7 @@
     shareBtn.addEventListener("click", function () {
       if (navigator.clipboard)
         navigator.clipboard.writeText(window.location.href);
-      flashButtonLabel(shareBtn, "Link copied!");
+      flashButtonLabel(shareBtn, "Link copied");
     });
   }
 
@@ -1812,7 +1812,7 @@
   var diffNextBtn = document.getElementById("diffNextBtn");
   var diffNavCount = document.getElementById("diffNavCount");
 
-  // Wires up the "Fixes & explanation" panel - every toggle checkbox, the
+  // Wires up the "Fixes and explanation" panel - every toggle checkbox, the
   // three group header checkboxes, the em-dash target dropdown, and
   // localStorage persistence - against whichever page it's called on.
   // Both index.html and batch.html ship the same Fixes panel markup (same
@@ -2230,8 +2230,8 @@
     var lines = [];
     var removedLine = formatCatCounts(sums.removed);
     var convertedLine = formatCatCounts(sums.converted);
-    if (removedLine) lines.push("Removed - " + removedLine);
-    if (convertedLine) lines.push("Converted - " + convertedLine);
+    if (removedLine) lines.push("Removed: " + removedLine);
+    if (convertedLine) lines.push("Converted: " + convertedLine);
     diffCounts.textContent = lines.join("   ·   ");
 
     if (!changes.length) {
@@ -2262,7 +2262,7 @@
       diffNote.style.display = "";
     } else if (inputOverlay === null) {
       diffNote.textContent =
-        "Inline highlighting isn't available for this input (Unicode normalization changed its length) - the counts above are still accurate.";
+        "Inline highlighting isn't available for this input (Unicode normalization changed its length). The counts above are still accurate.";
       diffNote.style.display = "";
     } else {
       diffNote.style.display = "none";
@@ -2315,8 +2315,9 @@
 
     var inLen = rawChars === null ? [...src].length : rawChars.length;
     var outLen = outputCE.chars.length;
-    inCount.textContent = inLen + " chars";
-    outCount.textContent = outLen + " chars";
+    inCount.textContent = inLen + (inLen === 1 ? " character" : " characters");
+    outCount.textContent =
+      outLen + (outLen === 1 ? " character" : " characters");
 
     var removedCount = 0,
       convertedCount = 0;
@@ -2329,7 +2330,7 @@
     if (inLen === 0) {
       statsHtml = "";
     } else if (removedCount === 0 && convertedCount === 0) {
-      statsHtml = "Nothing changed - text is already clean";
+      statsHtml = "Nothing changed: text is already clean";
     } else {
       var parts = [];
       if (removedCount)
@@ -2347,7 +2348,9 @@
     // far below where those live - hidden entirely (rather than shown
     // empty) when there's no input.
     var wordsCount = wordCount(result.output);
-    var footerBits = [inLen + " → " + outLen + " chars"];
+    var footerBits = [
+      inLen + " → " + outLen + (outLen === 1 ? " character" : " characters"),
+    ];
     if (statsHtml) footerBits.push(statsHtml);
     footerBits.push(wordsCount + (wordsCount === 1 ? " word" : " words"));
     stickyFooterCounts.innerHTML = footerBits.join(" &middot; ");
@@ -2460,7 +2463,7 @@
   copyBtn.addEventListener("click", function () {
     output.select();
     navigator.clipboard && navigator.clipboard.writeText(output.value);
-    flashButtonLabel(copyBtn, "Copied!");
+    flashButtonLabel(copyBtn, "Copied");
   });
 
   exportBtn.addEventListener("click", function () {
@@ -2475,7 +2478,7 @@
     a.remove();
     URL.revokeObjectURL(url);
 
-    flashButtonLabel(exportBtn, "Exported!");
+    flashButtonLabel(exportBtn, "Exported");
   });
 
   clearBtn.addEventListener("click", function () {
