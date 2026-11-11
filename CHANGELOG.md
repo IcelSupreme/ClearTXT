@@ -21,6 +21,10 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 - `CHANGELOG.md` follows Keep a Changelog from here on, and its intro defines the public surface. CI now runs on pull requests only, in one job, skipping drafts and docs-only changes ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
 - The site's text follows the Google developer style guide, with sentence-case capitalization: headings, buttons, labels, and tab titles, the README, and the wording of past changelog entries ([#65](https://github.com/icelsupreme/ClearTXT/issues/65)).
 
+### Fixed
+
+- Copy output and Export to file now use the latest text when clicked right after typing or pasting, instead of the text from before it ([#64](https://github.com/icelsupreme/ClearTXT/issues/64)).
+
 ## [1.14.1] - 2026-11-10
 - **Tooling (no runtime change):** added a tracked `.githooks/pre-push` hook that refuses a force push or delete of `main`, then runs the machine's own push checks when it has them. Enable it once per clone with `git config core.hooksPath .githooks`. `.gitattributes` keeps `.githooks/` files at LF line endings so the hook runs on Windows checkouts too.
 - **Fix (no runtime change):** `npm run lint` failed on Windows checkouts because files checked out with CRLF line endings, which Biome's formatting check rejects. `.gitattributes` now checks every text file out with LF ([#50](https://github.com/icelsupreme/ClearTXT/issues/50)).
