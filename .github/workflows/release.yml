@@ -50,12 +50,12 @@ jobs:
           fail=0
           lock=$(node -p "require('./package-lock.json').version")
           [ "$lock" = "$VERSION" ] || { echo "::error::package-lock.json has $lock."; fail=1; }
-          # Every ?v= inside an attribute value, whatever it holds, so a malformed or empty one is caught too.
-          vs=$(grep -rhoE '="[^"]*\?v=[^"]*"' site --include='*.html' | sed -E 's/.*\?(v=[^"]*)"/\1/' || true)
+          # Every ?v= in the HTML outside comments, quoted or not, whatever it holds, so a malformed or empty one is caught too.
+          vs=$(find site -name '*.html' -exec perl -0777 -pe 's/<!--.*?-->//gs' {} + | grep -oE "\?v=[^\"'[:space:]<>&]*" || true)
           if [ -z "$vs" ]; then
             echo "::error::No ?v= cache-busting strings found in site/."; fail=1
           else
-            stale=$(printf '%s\n' "$vs" | sort -u | grep -vxF "v=$VERSION" || true)
+            stale=$(printf '%s\n' "$vs" | sort -u | grep -vxF "?v=$VERSION" || true)
             [ -z "$stale" ] || { echo "::error::Cache-busting strings not at $VERSION: $stale"; fail=1; }
           fi
           for f in $(grep -rlF 'class="version"' site --include='*.html'); do
