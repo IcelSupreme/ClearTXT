@@ -1138,8 +1138,13 @@
   // ("# Title") or Setext (underlined), outside fenced code blocks and
   // after any front matter; else the first line.
   function titleLineOf(text) {
+    // After front matter, the blank lines that separate it from the body
+    // are skipped too, so the first-line fallback is the body's first line.
     var frontMatter = LEADING_FRONT_MATTER.exec(text);
-    var lines = text.slice(frontMatter ? frontMatter[0].length : 0).split("\n");
+    var body = frontMatter
+      ? text.slice(frontMatter[0].length).replace(/^\n+/, "")
+      : text;
+    var lines = body.split("\n");
     var fence = "";
     for (var i = 0; i < lines.length; i++) {
       var fenceMatch = CODE_FENCE.exec(lines[i]);
