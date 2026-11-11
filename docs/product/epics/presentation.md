@@ -13,3 +13,11 @@ How the site looks and presents itself: icons, the logo, the favicon, the social
 
 - **Everything written follows the Google developer style guide, with capitalization from the Microsoft Writing Style Guide** (sentence case) (product manager, 2026-11-11).
 - **The existing text is brought to that rule** (product manager, 2026-11-11), on every page, in the Changelog's past entries, and in the README. Tab titles keep the " - " separator. Planned in #65, which starts before the Convert stories (#62, #63, #64).
+
+## File names
+
+- **Downloads are named after the text's title, with Markdown markers and unsafe characters left out** (product manager, 2026-11-11). On the Convert page the title is the HTML's `<title>`, and an imported file's name wins over it. On the other pages it's the first Markdown heading, falling back to the first line. Planned in #68.
+
+## Mobile nav
+
+- **On mobile, the tools nav moves into a drawer** (product manager, 2026-11-11), opened by a button labeled "Tools" with Phosphor's "List" icon. Planned in #69, in its own pull request after the Convert page's; until then, the nav wraps onto two rows at 360 px.
