@@ -723,7 +723,12 @@
       }
     }
 
-    applyWhitespaceCleanup(changes, opts);
+    var frontMatterMatch = LEADING_FRONT_MATTER.exec(src);
+    applyWhitespaceCleanup(
+      changes,
+      opts,
+      frontMatterMatch ? Array.from(frontMatterMatch[0]).length : 0,
+    );
 
     var out = "";
     for (var o = 0; o < changes.length; o++) {
@@ -739,12 +744,17 @@
   // place; segments already marked "removed" by the first pass contribute
   // nothing and are skipped. Browsers normalize textarea line endings to a
   // single "\n" (no "\r\n"/"\r"), so only "\n" needs to be handled here.
-  function applyWhitespaceCleanup(changes, opts) {
+  //
+  // The first `protectedLength` characters keep their line breaks: that's
+  // a YAML front matter block opening the text (see LEADING_FRONT_MATTER),
+  // whose lines are its structure, so the line and paragraph break fixes
+  // would otherwise flatten it into one line that's no longer front matter.
+  function applyWhitespaceCleanup(changes, opts, protectedLength) {
     var n = changes.length;
 
     // A run of one "\n" is a line break within a paragraph; a run of two or
     // more is a blank-line paragraph break. Each is governed independently.
-    var i = 0;
+    var i = protectedLength || 0;
     while (i < n) {
       var seg = changes[i];
       if (seg.type !== "removed" && seg.replacement === "\n") {
@@ -1057,6 +1067,10 @@
   // filename, before the timestamp suffix is appended.
   var EXPORT_SLUG_MAX = 50;
 
+  // A YAML front matter block opening the text: a "---" line, any lines,
+  // then a closing "---" line, with the line breaks that follow it.
+  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n+|$)/;
+
   // Builds a YAML front matter block from `fields`, a list of [name, value]
   // pairs, for the Convert page. A field whose value is empty is left out,
   // and no fields at all give "". Each value is collapsed onto one line.
@@ -1087,8 +1101,8 @@
   }
 
   // Turns the title of `text` into a short, filesystem-safe slug for use
-  // in the exported filename. The title is the first Markdown heading,
-  // falling back to the first line, with its Markdown syntax stripped and
+  // in the exported filename. The title is found by titleLineOf, with its
+  // Markdown syntax stripped and
   // any marker left over (# * _ > ` ~) removed. Then strips characters
   // that are illegal (or just awkward) in a filename on common OSes,
   // collapses whitespace to hyphens, and truncates. Returns "" if there's
@@ -1108,14 +1122,49 @@
   // technique - which this app of all things shouldn't hand back to you
   // in a file it just generated.
   var MARKDOWN_HEADING_LINE = /^ {0,3}#{1,6}\s+\S/;
+  // A Setext heading is a line of text underlined with "=" or "-".
+  var SETEXT_UNDERLINE = /^ {0,3}(=+|-+)\s*$/;
+  var NOT_SETEXT_TEXT = /^\s*$|^ {0,3}(?:[-*+>]|\d+[.)])(?:\s|$)/;
+  var CODE_FENCE = /^ {0,3}(`{3,}|~{3,})/;
+
+  // The line holding the text's title: its first Markdown heading, ATX
+  // ("# Title") or Setext (underlined), outside fenced code blocks and
+  // after any front matter; else the first line.
+  function titleLineOf(text) {
+    var frontMatter = LEADING_FRONT_MATTER.exec(text);
+    var lines = text.slice(frontMatter ? frontMatter[0].length : 0).split("\n");
+    var fence = "";
+    for (var i = 0; i < lines.length; i++) {
+      var fenceMatch = CODE_FENCE.exec(lines[i]);
+      if (fence) {
+        // A fence closes on a run of the same character, at least as long,
+        // with nothing after it.
+        if (
+          fenceMatch &&
+          fenceMatch[1][0] === fence[0] &&
+          fenceMatch[1].length >= fence.length &&
+          !lines[i].slice(fenceMatch[0].length).trim()
+        )
+          fence = "";
+        continue;
+      }
+      if (fenceMatch) {
+        fence = fenceMatch[1];
+        continue;
+      }
+      if (MARKDOWN_HEADING_LINE.test(lines[i])) return lines[i];
+      if (
+        i + 1 < lines.length &&
+        !NOT_SETEXT_TEXT.test(lines[i]) &&
+        SETEXT_UNDERLINE.test(lines[i + 1])
+      )
+        return lines[i];
+    }
+    return lines[0] || "";
+  }
+
   function slugForFilename(text) {
-    var lines = text.split("\n");
-    var titleLine =
-      lines.find(function (line) {
-        return MARKDOWN_HEADING_LINE.test(line);
-      }) ||
-      lines[0] ||
-      "";
+    var titleLine = titleLineOf(text);
     // "|" goes first: it's unsafe in a filename, and stripMarkdown would
     // turn it into a space.
     var title = stripMarkdown(titleLine.replace(/\|/g, "")).replace(
@@ -2512,12 +2561,13 @@
   }
 
   // On the Convert page, the name of the last imported file, without its
-  // extension: the Markdown download is named after it. Forgotten when the
-  // input is cleared or emptied.
+  // extension: the Markdown download is named after it. Forgotten the
+  // moment the input is emptied, by the input listener below rather than
+  // the debounced update, so emptying and pasting new HTML within the
+  // debounce delay can't keep the old name.
   var importedName = "";
 
   function update() {
-    if (!input.value) importedName = "";
     var opts = fixOptions.readOpts();
     fixOptions.saveOpts(opts);
 
@@ -2601,7 +2651,10 @@
     outHighlight.scrollTop = output.scrollTop;
   }
 
-  input.addEventListener("input", scheduleUpdate);
+  input.addEventListener("input", function () {
+    if (!input.value) importedName = "";
+    scheduleUpdate();
+  });
   input.addEventListener("blur", flushUpdate);
   input.addEventListener("scroll", function () {
     inGutter.scrollTop = input.scrollTop;
@@ -2685,13 +2738,18 @@
       });
   });
 
+  // Copy and Export flush any pending debounced update first, like the
+  // change navigation does, so they never act on output from before the
+  // last keystroke or paste.
   copyBtn.addEventListener("click", function () {
+    flushUpdate();
     output.select();
     navigator.clipboard && navigator.clipboard.writeText(output.value);
     flashButtonLabel(copyBtn, "Copied");
   });
 
   exportBtn.addEventListener("click", function () {
+    flushUpdate();
     if (!output.value.length) return;
     var blob = new Blob([output.value], { type: "text/plain;charset=utf-8" });
     var url = URL.createObjectURL(blob);
@@ -2722,6 +2780,7 @@
 
   clearBtn.addEventListener("click", function () {
     input.value = "";
+    importedName = "";
     update();
     input.focus();
   });

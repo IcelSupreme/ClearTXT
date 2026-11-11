@@ -1071,3 +1071,67 @@ test("slugForFilename leaves Markdown markers out of file names", () => {
   );
   assert.equal(ClearTXT.slugForFilename("---\ntitle: x\n---\n"), "");
 });
+
+test("the line and paragraph break fixes keep a front matter block that opens the text", () => {
+  const text =
+    "---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line\nsecond line\n\nNext paragraph";
+  const { output } = ClearTXT.processText(
+    text,
+    opts({ removeLineBreaks: true, removeParagraphBreaks: true }),
+  );
+  assert.ok(
+    output.startsWith("---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line"),
+    JSON.stringify(output),
+  );
+  assert.ok(
+    output.endsWith("First line second line Next paragraph"),
+    JSON.stringify(output),
+  );
+});
+
+test("the line break fix still joins lines when the text doesn't open with front matter", () => {
+  const { output } = ClearTXT.processText(
+    "Intro\n---\ntitle: One\n---",
+    opts({ removeLineBreaks: true }),
+  );
+  assert.equal(output, "Intro --- title: One ---");
+});
+
+test("slugForFilename skips headings inside fenced code blocks", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n```md\n# Example\n```\n# Real title"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename(
+      "intro\n~~~~\n# Example\n~~~\nstill code\n~~~~\n## Real title",
+    ),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n````\n```\n# Example\n````\n# After"),
+    "After",
+  );
+});
+
+test("slugForFilename recognizes Setext headings", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nReal title\n----------\nbody"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nBig title\n===\nbody"),
+    "Big-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\n- a list item\n---\n# After the rule"),
+    "After-the-rule",
+  );
+});
+
+test("slugForFilename looks for the title after any front matter", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("---\ntitle: x\n---\n\nFirst body line\nmore"),
+    "First-body-line",
+  );
+});
