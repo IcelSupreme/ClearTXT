@@ -27,7 +27,7 @@ On GitHub, each milestone of this phase is named `Post launch improvement: <mile
 Added by the product manager on 2026-11-10.
 
 - **Target date:** none. ClearTXT is a low-effort project, worked on when the product manager has time (product manager, 2026-11-10).
-- **Covers:** improvements to the live site, starting with replacing the Lucide icons with Phosphor ([#55](https://github.com/icelsupreme/ClearTXT/issues/55)).
+- **Covers:** improvements to the live site, starting with replacing the Lucide icons with Phosphor ([#55](https://github.com/icelsupreme/ClearTXT/issues/55)), the text style rewrite ([#65](https://github.com/icelsupreme/ClearTXT/issues/65); product manager, 2026-11-11), and the HTML to Markdown tool ([`html-to-markdown.md`](../product/epics/html-to-markdown.md); product manager, 2026-11-11).
 - **Completion criteria** (product manager, 2026-11-10):
   - Every story on the milestone is closed.
 - **Go criteria** (product manager, 2026-11-10):

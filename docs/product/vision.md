@@ -19,13 +19,14 @@ Open: the README doesn't name who the site is for.
 
 ## Scope
 
-Three tools on one static site:
+Four tools on one static site:
 
 - **Single file:** paste, import, or type text, and copy or download the cleaned result.
 - **Batch:** clean many files at once with the same fixes, each downloaded under its original name.
 - **Compare:** diff two files word by word, with a report of the differences, optionally after cleaning both.
+- **HTML to Markdown:** paste HTML or import an `.html` file, and get Markdown out, cleaned with the same fixes and options as the other tools (product manager, 2026-11-11). See [`html-to-markdown.md`](epics/html-to-markdown.md).
 
-Every fix is a separate toggle, grouped by kind, and the choices are remembered between visits and shared by the three tools. A Documentation page explains what the site defends against and how, and a Changelog page lists what's new.
+Every fix is a separate toggle, grouped by kind, and the choices are remembered between visits and shared by the four tools. A Documentation page explains what the site defends against and how, and a Changelog page lists what's new.
 
 ## Non-goals
 
