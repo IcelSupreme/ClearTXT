@@ -1049,6 +1049,29 @@ test("frontMatter collapses a value onto one line", () => {
   );
 });
 
+test("slugForFilename takes the first Markdown heading, falling back to the first line", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("Intro line\n\n## The **real** title\n# Later"),
+    "The-real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("Plain first line\nmore"),
+    "Plain-first-line",
+  );
+});
+
+test("slugForFilename leaves Markdown markers out of file names", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("# A [link](https://x.com) and `code`"),
+    "A-link-and-code",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("> quoted_snake_case *star"),
+    "quotedsnakecase-star",
+  );
+  assert.equal(ClearTXT.slugForFilename("---\ntitle: x\n---\n"), "");
+});
+
 test("the line and paragraph break fixes keep a front matter block that opens the text", () => {
   const text =
     "---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line\nsecond line\n\nNext paragraph";
@@ -1087,6 +1110,58 @@ test("the line break fix still joins lines when the text doesn't open with front
     opts({ removeLineBreaks: true }),
   );
   assert.equal(output, "Intro --- title: One ---");
+});
+
+test("slugForFilename skips headings inside fenced code blocks", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n```md\n# Example\n```\n# Real title"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename(
+      "intro\n~~~~\n# Example\n~~~\nstill code\n~~~~\n## Real title",
+    ),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n````\n```\n# Example\n````\n# After"),
+    "After",
+  );
+});
+
+test("slugForFilename recognizes Setext headings", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nReal title\n----------\nbody"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nBig title\n===\nbody"),
+    "Big-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\n- a list item\n---\n# After the rule"),
+    "After-the-rule",
+  );
+});
+
+test("slugForFilename looks for the title after any front matter", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("---\ntitle: x\n---\n\nFirst body line\nmore"),
+    "First-body-line",
+  );
+});
+
+test("slugForFilename skips front matter with CRLF line breaks too", () => {
+  assert.equal(
+    ClearTXT.slugForFilename(
+      "---\r\ntitle: x\r\n---\r\n\r\nintro\r\n# Body heading\r\nmore",
+    ),
+    "Body-heading",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("---\r\ntitle: x\r\n---\r\nFirst body line"),
+    "First-body-line",
+  );
 });
 
 test("front matter stays valid after the default fixes change a value's characters", () => {

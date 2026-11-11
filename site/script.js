@@ -1075,8 +1075,10 @@
   var EXPORT_SLUG_MAX = 50;
 
   // A YAML front matter block opening the text: a "---" line, any lines,
-  // then a closing "---" line with its own line break.
-  var LEADING_FRONT_MATTER = /^---\n[\s\S]*?\n---(?:\n|$)/;
+  // then a closing "---" line with its own line break. Line breaks may be
+  // "\r\n" too: text in a page's text box never has them, but text passed
+  // to these functions directly can.
+  var LEADING_FRONT_MATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/;
 
   // Builds a YAML front matter block from `fields`, a list of [name, value]
   // pairs, for the Convert page. A field whose value is empty is left out,
@@ -1112,11 +1114,14 @@
     return lines.length ? "---\n" + lines.join("\n") + "\n---\n" : "";
   }
 
-  // Turns the first line of `text` into a short, filesystem-safe slug for
-  // use in the exported filename: strips characters that are illegal (or
-  // just awkward) in a filename on common OSes, collapses whitespace to
-  // hyphens, and truncates. Returns "" if there's nothing usable (empty
-  // text, or a first line that's entirely unsafe/whitespace characters).
+  // Turns the title of `text` into a short, filesystem-safe slug for use
+  // in the exported filename. The title is found by titleLineOf, with its
+  // Markdown syntax stripped and
+  // any marker left over (# * _ > ` ~) removed. Then strips characters
+  // that are illegal (or just awkward) in a filename on common OSes,
+  // collapses whitespace to hyphens, and truncates. Returns "" if there's
+  // nothing usable (empty text, or a title that's entirely
+  // unsafe/whitespace characters).
   //
   // Also strips Unicode Format-category/bidi-control characters and the
   // hidden-payload ranges (the same ones isFormatChar/isHiddenPayloadRange
@@ -1130,10 +1135,63 @@
   // an .exe as a .txt" trick documented as a real-world malware delivery
   // technique - which this app of all things shouldn't hand back to you
   // in a file it just generated.
+  var MARKDOWN_HEADING_LINE = /^ {0,3}#{1,6}\s+\S/;
+  // A Setext heading is a line of text underlined with "=" or "-".
+  var SETEXT_UNDERLINE = /^ {0,3}(=+|-+)\s*$/;
+  var NOT_SETEXT_TEXT = /^\s*$|^ {0,3}(?:[-*+>]|\d+[.)])(?:\s|$)/;
+  var CODE_FENCE = /^ {0,3}(`{3,}|~{3,})/;
+
+  // The line holding the text's title: its first Markdown heading, ATX
+  // ("# Title") or Setext (underlined), outside fenced code blocks and
+  // after any front matter; else the first line.
+  function titleLineOf(text) {
+    // After front matter, the blank lines that separate it from the body
+    // are skipped too, so the first-line fallback is the body's first line.
+    var frontMatter = LEADING_FRONT_MATTER.exec(text);
+    var body = frontMatter
+      ? text.slice(frontMatter[0].length).replace(/^(?:\r?\n)+/, "")
+      : text;
+    var lines = body.split(/\r?\n/);
+    var fence = "";
+    for (var i = 0; i < lines.length; i++) {
+      var fenceMatch = CODE_FENCE.exec(lines[i]);
+      if (fence) {
+        // A fence closes on a run of the same character, at least as long,
+        // with nothing after it.
+        if (
+          fenceMatch &&
+          fenceMatch[1][0] === fence[0] &&
+          fenceMatch[1].length >= fence.length &&
+          !lines[i].slice(fenceMatch[0].length).trim()
+        )
+          fence = "";
+        continue;
+      }
+      if (fenceMatch) {
+        fence = fenceMatch[1];
+        continue;
+      }
+      if (MARKDOWN_HEADING_LINE.test(lines[i])) return lines[i];
+      if (
+        i + 1 < lines.length &&
+        !NOT_SETEXT_TEXT.test(lines[i]) &&
+        SETEXT_UNDERLINE.test(lines[i + 1])
+      )
+        return lines[i];
+    }
+    return lines[0] || "";
+  }
+
   function slugForFilename(text) {
-    var firstLine = text.split("\n")[0] || "";
+    var titleLine = titleLineOf(text);
+    // "|" goes first: it's unsafe in a filename, and stripMarkdown would
+    // turn it into a space.
+    var title = stripMarkdown(titleLine.replace(/\|/g, "")).replace(
+      /[#*_>`~]/g,
+      "",
+    );
     return (
-      Array.from(firstLine)
+      Array.from(title)
         .filter(function (ch) {
           return (
             !isFormatChar(ch.codePointAt(0)) &&
@@ -1146,6 +1204,7 @@
         .replace(/[\\/:*?"<>|\x00-\x1F]/g, "")
         .trim()
         .replace(/\s+/g, "-")
+        .replace(/-{2,}/g, "-")
         .slice(0, EXPORT_SLUG_MAX)
         .replace(/-+$/, "")
     );
@@ -1953,6 +2012,9 @@
   }
 
   var turndownService = null;
+  // The title of the HTML last converted, which names the Markdown
+  // download (unless an imported file's name does).
+  var htmlTitle = "";
   // DOMParser builds an inert document: no script in it runs, and nothing
   // it links to loads. Turndown then works on that document's body.
   function htmlToMarkdown(html) {
@@ -1963,7 +2025,9 @@
     }
     var doc = new DOMParser().parseFromString(html, "text/html");
     promoteFirstRowsToHeaders(doc);
-    var meta = frontMatter(htmlMetadata(doc));
+    var metadata = htmlMetadata(doc);
+    htmlTitle = metadata[0][1] || "";
+    var meta = frontMatter(metadata);
     var body = turndownService.turndown(doc.body);
     return meta && body ? meta + "\n" + body : meta + body;
   }
@@ -2676,10 +2740,21 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
+    // Convert names the download after an imported file, else the HTML's
+    // title, cleaned with the same fixes as the text; every page otherwise
+    // names it after the text's own title.
     var importedSlug = slugForFilename(importedName);
+    var cleanTitle =
+      htmlInput && htmlTitle
+        ? processText(htmlTitle, fixOptions.readOpts()).output
+        : "";
     a.download = importedSlug
       ? importedSlug + ".md"
-      : exportFilename(output.value, undefined, htmlInput ? ".md" : ".txt");
+      : exportFilename(
+          cleanTitle || output.value,
+          undefined,
+          htmlInput ? ".md" : ".txt",
+        );
     document.body.appendChild(a);
     a.click();
     a.remove();
