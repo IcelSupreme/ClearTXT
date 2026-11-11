@@ -235,7 +235,7 @@ From time to time, compare the closed issues that a pull request finished with t
 
 - Count the lines changed in code and in documents (`.md` files). Leave out generated files, such as lock files, snapshots, and build output: a regenerated file can add tens of thousands of lines whatever the task's size. When one pull request finished several issues, split its size between them.
 - Lines aren't effort. Every story carries fixed work that lines don't show, such as its pull request, its changelog lines, and the product manager's check. A bug's points pay for finding the cause, which doesn't show in the fix's size, and visual work spends its effort on screenshots and checks.
-- Time can only be compared when a commit is made at each working step: with one commit made when the work is done, or a first commit made as the pull request opens, the building before it doesn't show.
+- Time can only be compared when commits follow [`working-practices.md`](working-practices.md), "Commit at each working step": with one commit made when the work is done, or a first commit made as the pull request opens, the building before it doesn't show.
 - Leave out issues closed as not planned, closed without a pull request, trackers, and epics.
 
 ## Why no Project board
