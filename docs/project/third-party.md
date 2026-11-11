@@ -10,9 +10,33 @@ None. The site is plain HTML, CSS, and JavaScript that runs in the browser, with
 
 ## Dependencies and libraries
 
-The site ships no dependencies. These are used for development only.
+### Shipped with the site
 
-### Biome
+The Convert page turns HTML into Markdown with these two libraries. Each file is copied unchanged from its npm package's `dist/` folder into `site/vendor/`, with no build step, and its license ships unchanged in `site/licenses/`. Biome skips `site/vendor/` (`biome.jsonc`), so the files stay as published.
+
+#### Turndown
+
+- **Version:** 7.2.4, published 2026-04-03. 7.2.5 was a week old when it was chosen, so the release before it was taken.
+- **Source:** <https://github.com/mixmark-io/turndown>, from npm as `turndown`. Integrity `sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ==`.
+- **File:** `site/vendor/turndown.js`, from `dist/turndown.js`, the browser build that defines `TurndownService`. Its npm dependency, `@mixmark-io/domino`, is for Node only and isn't in this build.
+- **License:** MIT, copyright 2017 Dom Christie. Ships as `site/licenses/turndown.txt`.
+- **Use:** converts HTML to Markdown. It reads the HTML with the browser's `DOMParser`, which runs no scripts and loads no images or other files.
+- **Credit:** "Markdown conversion by Turndown and turndown-plugin-gfm, MIT License." on the Documentation page (product manager, 2026-11-11).
+
+#### turndown-plugin-gfm
+
+- **Version:** 1.0.2, published 2018-05-11, the latest.
+- **Source:** <https://github.com/domchristie/turndown-plugin-gfm>, from npm as `turndown-plugin-gfm`. Integrity `sha512-vwz9tfvF7XN/jE0dGoBei3FXWuvll78ohzCZQuOb+ZjWrs3a0XhQVomJEb2Qh4VHTPNRO4GPZh0V7VRbiWwkRg==`.
+- **File:** `site/vendor/turndown-plugin-gfm.js`, from `dist/turndown-plugin-gfm.js`, which defines `turndownPluginGfm`.
+- **License:** MIT, copyright 2017 Dom Christie. Ships as `site/licenses/turndown-plugin-gfm.txt`.
+- **Use:** adds GitHub Flavored Markdown to Turndown: tables, strikethrough, and task lists.
+- **Credit:** shared with Turndown, above.
+
+### Development only
+
+These aren't part of the site.
+
+#### Biome
 
 - **Version:** 2.5.10, pinned in `package.json`.
 - **Source:** <https://biomejs.dev>, installed from npm as `@biomejs/biome`, with its platform package (`@biomejs/cli-*`).
@@ -20,7 +44,7 @@ The site ships no dependencies. These are used for development only.
 - **Use:** the linter and formatter, run by `npm run lint` and `npm run format`. Configured in `biome.jsonc`.
 - **Shipping:** development only. The Deploy workflow publishes `site/` only, so Biome is never in what ships.
 
-### Node.js
+#### Node.js
 
 - **Version:** 22 in CI (`.github/workflows/ci.yml`).
 - **Source:** <https://nodejs.org>
