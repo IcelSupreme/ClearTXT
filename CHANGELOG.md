@@ -8,6 +8,8 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-11
+
 ### Added
 
 - A Release workflow: it checks that the version is the same everywhere and has its changelog entries and green CI, then creates the tag and the GitHub Release and ships the site. `docs/tech/deploy.md` has the steps ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
@@ -289,5 +291,6 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 ## 0.1.0
 - **Initial release:** a single-page text filter that strips input down to a printable-ASCII-plus-curated-dashes whitelist, after normalizing to Unicode NFKC (such as folding ligatures, full-width forms, and superscripts) and explicitly stripping zero-width and invisible characters. Copy and clear controls and an explanation of what's kept versus removed.
 
-[Unreleased]: https://github.com/icelsupreme/ClearTXT/compare/v1.14.1...HEAD
+[Unreleased]: https://github.com/icelsupreme/ClearTXT/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/icelsupreme/ClearTXT/releases/tag/v2.0.0
 [1.14.1]: https://github.com/icelsupreme/ClearTXT/releases/tag/v1.14.1
