@@ -1079,13 +1079,28 @@ test("the line and paragraph break fixes keep a front matter block that opens th
     text,
     opts({ removeLineBreaks: true, removeParagraphBreaks: true }),
   );
-  assert.ok(
-    output.startsWith("---\ntitle: One\nsite: |-\n Two\n---\n\nFirst line"),
-    JSON.stringify(output),
+  assert.equal(
+    output,
+    "---\ntitle: One\nsite: |-\n Two\n---\nFirst line second line Next paragraph",
   );
-  assert.ok(
-    output.endsWith("First line second line Next paragraph"),
-    JSON.stringify(output),
+});
+
+test("blank lines after front matter follow the paragraph break fix, and the closing line break stays", () => {
+  const text = "---\na: b\n---\n\n\nBody\nmore";
+  assert.equal(
+    ClearTXT.processText(text, opts({ removeParagraphBreaks: true })).output,
+    "---\na: b\n---\nBody\nmore",
+  );
+  assert.equal(
+    ClearTXT.processText(text, opts({ removeLineBreaks: true })).output,
+    "---\na: b\n---\n\n\nBody more",
+  );
+  assert.equal(
+    ClearTXT.processText(
+      "---\na: b\n---\nBody",
+      opts({ removeLineBreaks: true }),
+    ).output,
+    "---\na: b\n---\nBody",
   );
 });
 
