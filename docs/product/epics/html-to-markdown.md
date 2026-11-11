@@ -1,6 +1,6 @@
 # HTML to Markdown
 
-A fourth tool that turns HTML into Markdown. Epic: open, not filed yet.
+A fourth tool that turns HTML into Markdown. Epic: #61.
 
 ## Decisions
 
@@ -14,14 +14,15 @@ A fourth tool that turns HTML into Markdown. Epic: open, not filed yet.
 - **Tables, strikethrough, and task lists convert to GitHub-style Markdown** (product manager, 2026-11-11).
 - **The page marks what the cleaning fixes changed,** as the single-file tool does (product manager, 2026-11-11).
 - **The page is named "Convert"** (product manager, 2026-11-11).
+- **No PDFs and no fetching from a URL** (product manager, 2026-11-11).
 
 ## Stories
 
-Approved with their order by the product manager on 2026-11-11. Not filed yet.
+Approved with their order by the product manager on 2026-11-11.
 
-1. As a user, I can paste HTML on the Convert page and copy or download the Markdown, so that I can reuse web content as plain text.
-1. As a user, I can have the Markdown cleaned with the same fixes and options as the other tools, so that the result is safe to paste anywhere.
-1. As a user, I can import an `.html` file, so that I don't have to copy its source.
+1. #62: As a user, I can paste HTML on the Convert page and copy or download the Markdown, so that I can reuse web content as plain text.
+1. #63: As a user, I can have the Markdown cleaned with the same fixes and options as the other tools, so that the result is safe to paste anywhere.
+1. #64: As a user, I can import an `.html` file, so that I don't have to copy its source.
 
 ## Open
 
