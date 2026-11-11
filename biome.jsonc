@@ -7,6 +7,12 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  // site/vendor/ holds third-party libraries copied unchanged from their
+  // packages (see docs/project/third-party.md), so they're never checked or
+  // reformatted.
+  "files": {
+    "includes": ["**", "!site/vendor"]
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
