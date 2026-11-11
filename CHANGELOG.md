@@ -18,7 +18,7 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ### Changed
 
-- Downloads from the single-file and Convert pages are named after the text's first Markdown heading, falling back to its first line, instead of always the first line. On Convert, an imported file's name comes first, then the HTML's `<title>`, cleaned with the same fixes. Markdown markers (`#`, `*`, `_`, `>`, `` ` ``, `~`) never reach a file name, and runs of hyphens become one ([#68](https://github.com/icelsupreme/ClearTXT/issues/68)).
+- Downloads from the single-file and Convert pages are named after the text's first Markdown heading, underlined (Setext) headings included, falling back to its first line, instead of always the first line. Headings inside fenced code blocks, and any front matter, are skipped. On Convert, an imported file's name comes first, then the HTML's `<title>`, cleaned with the same fixes. Markdown markers (`#`, `*`, `_`, `>`, `` ` ``, `~`) never reach a file name, and runs of hyphens become one ([#68](https://github.com/icelsupreme/ClearTXT/issues/68)).
 - `exportFilename` takes an optional file extension, `.txt` by default; the Convert page exports `.md` ([#62](https://github.com/icelsupreme/ClearTXT/issues/62)).
 - `CHANGELOG.md` follows Keep a Changelog from here on, and its intro defines the public surface. CI now runs on pull requests only, in one job, skipping drafts and docs-only changes ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
 - The site's text follows the Google developer style guide, with sentence-case capitalization: headings, buttons, labels, and tab titles, the README, and the wording of past changelog entries ([#65](https://github.com/icelsupreme/ClearTXT/issues/65)).

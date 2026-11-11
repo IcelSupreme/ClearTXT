@@ -1096,3 +1096,42 @@ test("the line break fix still joins lines when the text doesn't open with front
   );
   assert.equal(output, "Intro --- title: One ---");
 });
+
+test("slugForFilename skips headings inside fenced code blocks", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n```md\n# Example\n```\n# Real title"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename(
+      "intro\n~~~~\n# Example\n~~~\nstill code\n~~~~\n## Real title",
+    ),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n````\n```\n# Example\n````\n# After"),
+    "After",
+  );
+});
+
+test("slugForFilename recognizes Setext headings", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nReal title\n----------\nbody"),
+    "Real-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\nBig title\n===\nbody"),
+    "Big-title",
+  );
+  assert.equal(
+    ClearTXT.slugForFilename("intro\n\n- a list item\n---\n# After the rule"),
+    "After-the-rule",
+  );
+});
+
+test("slugForFilename looks for the title after any front matter", () => {
+  assert.equal(
+    ClearTXT.slugForFilename("---\ntitle: x\n---\n\nFirst body line\nmore"),
+    "First-body-line",
+  );
+});

@@ -1101,8 +1101,8 @@
   }
 
   // Turns the title of `text` into a short, filesystem-safe slug for use
-  // in the exported filename. The title is the first Markdown heading,
-  // falling back to the first line, with its Markdown syntax stripped and
+  // in the exported filename. The title is found by titleLineOf, with its
+  // Markdown syntax stripped and
   // any marker left over (# * _ > ` ~) removed. Then strips characters
   // that are illegal (or just awkward) in a filename on common OSes,
   // collapses whitespace to hyphens, and truncates. Returns "" if there's
@@ -1122,14 +1122,49 @@
   // technique - which this app of all things shouldn't hand back to you
   // in a file it just generated.
   var MARKDOWN_HEADING_LINE = /^ {0,3}#{1,6}\s+\S/;
+  // A Setext heading is a line of text underlined with "=" or "-".
+  var SETEXT_UNDERLINE = /^ {0,3}(=+|-+)\s*$/;
+  var NOT_SETEXT_TEXT = /^\s*$|^ {0,3}(?:[-*+>]|\d+[.)])(?:\s|$)/;
+  var CODE_FENCE = /^ {0,3}(`{3,}|~{3,})/;
+
+  // The line holding the text's title: its first Markdown heading, ATX
+  // ("# Title") or Setext (underlined), outside fenced code blocks and
+  // after any front matter; else the first line.
+  function titleLineOf(text) {
+    var frontMatter = LEADING_FRONT_MATTER.exec(text);
+    var lines = text.slice(frontMatter ? frontMatter[0].length : 0).split("\n");
+    var fence = "";
+    for (var i = 0; i < lines.length; i++) {
+      var fenceMatch = CODE_FENCE.exec(lines[i]);
+      if (fence) {
+        // A fence closes on a run of the same character, at least as long,
+        // with nothing after it.
+        if (
+          fenceMatch &&
+          fenceMatch[1][0] === fence[0] &&
+          fenceMatch[1].length >= fence.length &&
+          !lines[i].slice(fenceMatch[0].length).trim()
+        )
+          fence = "";
+        continue;
+      }
+      if (fenceMatch) {
+        fence = fenceMatch[1];
+        continue;
+      }
+      if (MARKDOWN_HEADING_LINE.test(lines[i])) return lines[i];
+      if (
+        i + 1 < lines.length &&
+        !NOT_SETEXT_TEXT.test(lines[i]) &&
+        SETEXT_UNDERLINE.test(lines[i + 1])
+      )
+        return lines[i];
+    }
+    return lines[0] || "";
+  }
+
   function slugForFilename(text) {
-    var lines = text.split("\n");
-    var titleLine =
-      lines.find(function (line) {
-        return MARKDOWN_HEADING_LINE.test(line);
-      }) ||
-      lines[0] ||
-      "";
+    var titleLine = titleLineOf(text);
     // "|" goes first: it's unsafe in a filename, and stripMarkdown would
     // turn it into a space.
     var title = stripMarkdown(titleLine.replace(/\|/g, "")).replace(
