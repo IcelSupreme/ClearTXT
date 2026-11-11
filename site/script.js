@@ -2375,6 +2375,13 @@
     update();
   }
 
+  // On the Convert page, the name of the last imported file, without its
+  // extension: the Markdown download is named after it. Forgotten the
+  // moment the input is emptied, by the input listener below rather than
+  // the debounced update, so emptying and pasting new HTML within the
+  // debounce delay can't keep the old name.
+  var importedName = "";
+
   function update() {
     var opts = fixOptions.readOpts();
     fixOptions.saveOpts(opts);
@@ -2459,7 +2466,10 @@
     outHighlight.scrollTop = output.scrollTop;
   }
 
-  input.addEventListener("input", scheduleUpdate);
+  input.addEventListener("input", function () {
+    if (!input.value) importedName = "";
+    scheduleUpdate();
+  });
   input.addEventListener("blur", flushUpdate);
   input.addEventListener("scroll", function () {
     inGutter.scrollTop = input.scrollTop;
@@ -2527,6 +2537,7 @@
       .text()
       .then(function (text) {
         input.value = text;
+        importedName = htmlInput ? file.name.replace(/\.html?$/i, "") : "";
         update();
         input.focus();
       })
@@ -2542,23 +2553,27 @@
       });
   });
 
+  // Copy and Export flush any pending debounced update first, like the
+  // change navigation does, so they never act on output from before the
+  // last keystroke or paste.
   copyBtn.addEventListener("click", function () {
+    flushUpdate();
     output.select();
     navigator.clipboard && navigator.clipboard.writeText(output.value);
     flashButtonLabel(copyBtn, "Copied");
   });
 
   exportBtn.addEventListener("click", function () {
+    flushUpdate();
     if (!output.value.length) return;
     var blob = new Blob([output.value], { type: "text/plain;charset=utf-8" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = exportFilename(
-      output.value,
-      undefined,
-      htmlInput ? ".md" : ".txt",
-    );
+    var importedSlug = slugForFilename(importedName);
+    a.download = importedSlug
+      ? importedSlug + ".md"
+      : exportFilename(output.value, undefined, htmlInput ? ".md" : ".txt");
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -2569,6 +2584,7 @@
 
   clearBtn.addEventListener("click", function () {
     input.value = "";
+    importedName = "";
     update();
     input.focus();
   });

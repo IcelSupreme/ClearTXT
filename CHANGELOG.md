@@ -13,12 +13,17 @@ Releases after 1.14.1 follow [Keep a Changelog](https://keepachangelog.com/en/1.
 - A Release workflow: it checks that the version is the same everywhere and has its changelog entries and green CI, then creates the tag and the GitHub Release and ships the site. `docs/tech/deploy.md` has the steps ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
 - The working practices, `docs/project/working-practices.md`, and a pull request template, `.github/pull_request_template.md` ([#44](https://github.com/icelsupreme/ClearTXT/issues/44)).
 - The Convert page, `site/convert/`: paste HTML, or import an `.html` file, and get Markdown, cleaned with the same fixes and settings as the other tools. Converted characters are marked in the Markdown, and removed ones are counted. A table without a header row gets its first row promoted to the header, and a table caption becomes a paragraph before the table. It uses Turndown 7.2.4 and turndown-plugin-gfm 1.0.2 (MIT), which ship unchanged in `site/vendor/`. Every page's tools nav links to it, and the Documentation page explains it ([#62](https://github.com/icelsupreme/ClearTXT/issues/62), [#63](https://github.com/icelsupreme/ClearTXT/issues/63)).
+- On the Convert page, an imported `.html` or `.htm` file names the Markdown download, such as `My Page.html` downloading as `My-Page.md`, until the input is cleared ([#64](https://github.com/icelsupreme/ClearTXT/issues/64)).
 
 ### Changed
 
 - `exportFilename` takes an optional file extension, `.txt` by default; the Convert page exports `.md` ([#62](https://github.com/icelsupreme/ClearTXT/issues/62)).
 - `CHANGELOG.md` follows Keep a Changelog from here on, and its intro defines the public surface. CI now runs on pull requests only, in one job, skipping drafts and docs-only changes ([#45](https://github.com/icelsupreme/ClearTXT/issues/45)).
 - The site's text follows the Google developer style guide, with sentence-case capitalization: headings, buttons, labels, and tab titles, the README, and the wording of past changelog entries ([#65](https://github.com/icelsupreme/ClearTXT/issues/65)).
+
+### Fixed
+
+- Copy output and Export to file now use the latest text when clicked right after typing or pasting, instead of the text from before it ([#64](https://github.com/icelsupreme/ClearTXT/issues/64)).
 
 ## [1.14.1] - 2026-11-10
 - **Tooling (no runtime change):** added a tracked `.githooks/pre-push` hook that refuses a force push or delete of `main`, then runs the machine's own push checks when it has them. Enable it once per clone with `git config core.hooksPath .githooks`. `.gitattributes` keeps `.githooks/` files at LF line endings so the hook runs on Windows checkouts too.
